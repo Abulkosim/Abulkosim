@@ -50,6 +50,7 @@ There is no telemetry and no account. Each app's privacy notes say what it reads
 
 ### Other things
 
+- [realsoft-chrome-extension](https://github.com/Abulkosim/realsoft-chrome-extension): signs RealSoft employees in to the office Wi-Fi with one click. 73 people use it, from the [Chrome Web Store](https://chromewebstore.google.com/detail/realsoft/hhekakkemegiocboammljekhcefhfhgb).
 - [nudge](https://github.com/Abulkosim/nudge): a Telegram bot for replies and documents you're waiting on.
 - [gitlab-discord-team-watch](https://github.com/Abulkosim/gitlab-discord-team-watch): posts GitLab team activity to Discord, plus a daily list of merge requests waiting for review.
 - [skills](https://github.com/Abulkosim/skills): agent skills for merge request descriptions, release notes and meeting summaries.
