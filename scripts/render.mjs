@@ -13,8 +13,20 @@ const W = 840;
 const APPS = [
   { repo: 'margin', name: 'Margin', tagline: 'Claude Code and Codex usage limits, across accounts', accent: ['#6c886f', '#b8d1ba'] },
   { repo: 'wick', name: 'Wick', tagline: 'Keeps your computer awake, for a time or while an app runs', accent: ['#b8873a', '#f0d39b'] },
-  { repo: 'weir', name: 'Weir', tagline: 'Internet speed and connection checks, one click away', accent: ['#2f7fbf', '#7ab4e4'] },
+  { repo: 'weir', name: 'Weir', tagline: 'Internet speed and connection checks from the menu bar', accent: ['#2f7fbf', '#7ab4e4'] },
 ];
+
+// typeprose has no releases. Its card shows the app itself: a passage from its
+// own corpus, a new one each day, mid-run.
+const TYPEPROSE = {
+  repo: 'typeprose',
+  name: 'typeprose',
+  tagline: 'Typing practice on real prose from public-domain books',
+  stage: {
+    light: { bg: '#e9e2d0', typed: '#2a2620', pending: '#857c6b', caret: '#a9761a', error: '#9a2e2e' },
+    dark: { bg: '#12100e', typed: '#e6e0d2', pending: '#6e675c', caret: '#c99a3c', error: '#b04a4a' },
+  },
+};
 
 const INSTALLER = /\.(dmg|exe|msi|deb|rpm|AppImage)$/;
 const PLATFORM = [
@@ -59,6 +71,51 @@ async function graphql(query) {
   return json.data;
 }
 
+async function count(path) {
+  const res = await fetch(`https://api.github.com${path}${path.includes('?') ? '&' : '?'}per_page=1`, {
+    headers: { accept: 'application/vnd.github+json', ...(TOKEN ? { authorization: `Bearer ${TOKEN}` } : {}) },
+  });
+  if (!res.ok) throw new Error(`${path}: ${res.status}`);
+  const last = res.headers.get('link')?.match(/[?&]page=(\d+)>; rel="last"/);
+  return last ? Number(last[1]) : (await res.json()).length;
+}
+
+// Just enough YAML for corpus/passages.yaml: one `- author:` block per
+// passage, with author_name, title and a folded `text: >` block.
+function parsePassages(yaml) {
+  return yaml
+    .split(/^- (?=author:)/m)
+    .slice(1)
+    .map((block) => {
+      const field = (k) => block.match(new RegExp(`^\\s*${k}:\\s*'?(.*?)'?\\s*$`, 'm'))?.[1];
+      const text = block.match(/^\s*text:\s*>-?\n((?:[ \t]+.*\n?)+)/m)?.[1];
+      return { author: field('author_name'), title: field('title'), text: text?.split('\n').map((l) => l.trim()).filter(Boolean).join(' ') };
+    })
+    .filter((p) => p.author && p.title && p.text);
+}
+
+async function loadTypeprose() {
+  const [info, commits, file] = await Promise.all([
+    gh(`/repos/${USER}/${TYPEPROSE.repo}`),
+    count(`/repos/${USER}/${TYPEPROSE.repo}/commits`),
+    gh(`/repos/${USER}/${TYPEPROSE.repo}/contents/corpus/passages.yaml`),
+  ]);
+  const passages = parsePassages(Buffer.from(file.content, 'base64').toString('utf8'));
+  // A first sentence short enough for two lines on the card.
+  const short = passages
+    .map((p) => ({ ...p, line: p.text.match(/^.+?[.!?](?:[’”"])?(?=\s|$)/)?.[0] ?? p.text }))
+    .filter((p) => p.line.length >= 60 && p.line.length <= 150);
+  const today = Math.floor(NOW.getTime() / 86400e3);
+  return {
+    ...TYPEPROSE,
+    stars: info.stargazers_count,
+    commits,
+    passages: passages.length,
+    pushed: new Date(info.pushed_at),
+    passage: short[today % short.length],
+  };
+}
+
 async function releases(repo) {
   const all = [];
   for (let page = 1; ; page++) {
@@ -89,12 +146,14 @@ async function load() {
       };
     }),
   );
-  const [merged, graph] = await Promise.all([
+  const [merged, graph, typeprose] = await Promise.all([
     gh(`/search/issues?q=${encodeURIComponent(`author:${USER} is:pr is:merged is:public`)}&per_page=1`),
     graphql(`query { user(login: "${USER}") { contributionsCollection { contributionCalendar { totalContributions } } } }`),
+    loadTypeprose(),
   ]);
   return {
     apps,
+    typeprose,
     mergedPrs: merged.total_count,
     contributions: graph.user.contributionsCollection.contributionCalendar.totalContributions,
   };
@@ -182,6 +241,80 @@ ${statsSvg}`;
   return svg(W, H, body, t, `${app.name} ${app.version}: ${app.tagline}. ${app.downloads} downloads, ${app.stars} stars.`);
 }
 
+function wrap(text, width) {
+  const lines = [''];
+  for (const word of text.split(' ')) {
+    const next = lines.at(-1) ? `${lines.at(-1)} ${word}` : word;
+    if (next.length > width && lines.at(-1)) lines.push(word);
+    else lines[lines.length - 1] = next;
+  }
+  return lines;
+}
+
+function typeproseCard(tp, icon, t, mode) {
+  const c = tp.stage[mode];
+  const p = tp.passage;
+  const CH = 9; // every glyph is forced to this advance with textLength
+  const stageX = 24, stageY = 112, stageW = W - 48, padX = 24;
+  const cols = Math.floor((stageW - padX * 2) / CH);
+  const lines = wrap(p.line, cols).slice(0, 2);
+  const stageH = 40 + lines.length * 28 + 24;
+  const H = stageY + stageH + 24;
+
+  // Mid-run: about 40% typed, one missed key a few letters back.
+  const total = lines.reduce((n, l) => n + l.length, 0);
+  let caret = Math.round(total * 0.4);
+  while (caret < total && lines.join(' ')[caret - 1] === ' ') caret++;
+  let miss = caret - 5;
+  while (miss > 0 && !/[a-z]/i.test(lines.join(' ')[miss])) miss--;
+
+  let offset = 0;
+  const text = lines
+    .map((line, li) => {
+      const y = stageY + 44 + li * 28;
+      const x = stageX + padX;
+      const spans = [...line].map((ch, i) => {
+        const k = offset + i;
+        const fill = k === miss ? c.error : k < caret ? c.typed : c.pending;
+        return `<tspan style="fill:${fill}">${esc(ch)}</tspan>`;
+      });
+      let extra = '';
+      if (miss >= offset && miss < offset + line.length) {
+        extra += `<rect x="${x + (miss - offset) * CH}" y="${y + 4}" width="${CH}" height="2" fill="${c.error}"/>`;
+      }
+      if (caret >= offset && caret <= offset + line.length) {
+        extra += `<rect x="${x + (caret - offset) * CH - 1}" y="${y - 16}" width="2" height="22" rx="1" fill="${c.caret}"/>`;
+      }
+      offset += line.length + 1;
+      return `<text x="${x}" y="${y}" class="mono" font-size="15" textLength="${line.length * CH}" lengthAdjust="spacing">${spans.join('')}</text>${extra}`;
+    })
+    .join('\n');
+
+  const nameW = tp.name.length * 10;
+  const stats = [
+    [num(tp.passages), 'passages'],
+    [num(tp.commits), 'commits'],
+  ]
+    .map(([v, l], i) => {
+      const x = W - 28 - (1 - i) * 104;
+      return `<text x="${x}" y="52" class="mono" font-size="20" font-weight="500" text-anchor="end">${esc(v)}</text>
+<text x="${x}" y="72" class="t" font-size="12" text-anchor="end">${esc(l)}</text>`;
+    })
+    .join('\n');
+
+  const body = `<image x="30" y="30" width="52" height="52" href="data:image/png;base64,${icon}"/>
+<text x="108" y="48" font-size="20" font-weight="500">${esc(tp.name)}</text>
+<text x="${108 + nameW + 8}" y="48" class="mono t" font-size="13">web</text>
+<text x="108" y="72" class="s" font-size="14">${esc(tp.tagline)}</text>
+<text x="108" y="92" class="t" font-size="12">React, Fastify and Postgres   ·   last commit ${esc(ago(tp.pushed))}</text>
+${stats}
+<rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="8" fill="${c.bg}"/>
+${text}
+<text x="${stageX + padX}" y="${stageY + stageH - 20}" font-size="12" style="fill:${c.pending}">${esc(p.author)}, ${esc(p.title)}</text>
+<text x="${stageX + stageW - padX}" y="${stageY + stageH - 20}" font-size="12" style="fill:${c.pending}" text-anchor="end">today’s passage</text>`;
+  return svg(W, H, body, t, `typeprose: ${tp.tagline}. Today's passage: “${p.line}” ${p.author}, ${p.title}.`);
+}
+
 function cadenceCard(data, t, mode) {
   const H = 244;
   const DAY = 86400e3;
@@ -261,12 +394,13 @@ ${rows}
 
 const data = await load();
 const icons = Object.fromEntries(
-  await Promise.all(APPS.map(async (a) => [a.repo, (await readFile(new URL(`../assets/${a.repo}.png`, import.meta.url))).toString('base64')])),
+  await Promise.all([...APPS, TYPEPROSE].map(async (a) => [a.repo, (await readFile(new URL(`../assets/${a.repo}.png`, import.meta.url))).toString('base64')])),
 );
 await mkdir(OUT, { recursive: true });
 for (const [mode, t] of Object.entries(THEMES)) {
   await writeFile(join(OUT, `stats-${mode}.svg`), statsCard(data, t));
   await writeFile(join(OUT, `cadence-${mode}.svg`), cadenceCard(data, t, mode));
+  await writeFile(join(OUT, `typeprose-${mode}.svg`), typeproseCard(data.typeprose, icons.typeprose, t, mode));
   for (const app of data.apps) await writeFile(join(OUT, `${app.repo}-${mode}.svg`), appCard(app, icons[app.repo], t));
 }
 await writeFile(join(OUT, 'data.json'), JSON.stringify({ generated: NOW, ...data, apps: data.apps.map(({ releases, ...a }) => ({ ...a, releases: releases.length })) }, null, 2) + '\n');
