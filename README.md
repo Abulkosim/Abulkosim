@@ -3,22 +3,30 @@
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/stats-light.svg" alt="Installer downloads, releases shipped, contributions and merged pull requests" width="840" />
 </picture>
 
-<a href="https://github.com/Abulkosim/margin"><picture>
+<a href="https://github.com/Abulkosim/margin">
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/margin-dark.svg" />
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/margin-light.svg" alt="Margin: Claude Code and Codex usage limits across accounts, for macOS and Windows" width="840" />
-</picture></a>
-<a href="https://github.com/Abulkosim/wick"><picture>
+</picture>
+</a>
+<a href="https://github.com/Abulkosim/wick">
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/wick-dark.svg" />
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/wick-light.svg" alt="Wick: keeps your computer awake, for macOS, Windows and Linux" width="840" />
-</picture></a>
-<a href="https://github.com/Abulkosim/weir"><picture>
+</picture>
+</a>
+<a href="https://github.com/Abulkosim/weir">
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/weir-dark.svg" />
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/weir-light.svg" alt="Weir: internet speed and connection checks, for macOS and Windows" width="840" />
-</picture></a>
-<a href="https://github.com/Abulkosim/typeprose"><picture>
+</picture>
+</a>
+<a href="https://github.com/Abulkosim/typeprose">
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-dark.svg" />
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
-</picture></a>
+</picture>
+</a>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-dark.svg" />
