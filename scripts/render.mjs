@@ -14,6 +14,7 @@ const APPS = [
   { repo: 'margin', name: 'Margin', tagline: 'Claude Code and Codex usage limits, across accounts', accent: ['#6c886f', '#b8d1ba'] },
   { repo: 'wick', name: 'Wick', tagline: 'Keeps your computer awake, for a time or while an app runs', accent: ['#b8873a', '#f0d39b'] },
   { repo: 'weir', name: 'Weir', tagline: 'Internet speed and connection checks from the menu bar', accent: ['#2f7fbf', '#7ab4e4'] },
+  { repo: 'tonearm', name: 'Tonearm', tagline: 'A mini player for the Spotify desktop app, in the menu bar', accent: ['#c8692a', '#f0954f'] },
 ];
 
 // typeprose has no releases. Its card shows the app itself: a passage from its
