@@ -21,6 +21,12 @@
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/weir-light.svg" alt="Weir: internet speed and connection checks, for macOS and Windows" width="840" />
 </picture>
 </a>
+<a href="https://github.com/Abulkosim/tonearm">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/tonearm-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/tonearm-light.svg" alt="Tonearm: a mini player for the Spotify desktop app in the macOS menu bar" width="840" />
+</picture>
+</a>
 <a href="https://github.com/Abulkosim/typeprose">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-dark.svg" />
@@ -36,6 +42,7 @@
 ```sh
 brew install --cask abulkosim/tap/wick
 brew install --cask abulkosim/tap/weir
+brew install --cask abulkosim/tap/tonearm
 ```
 
 ### How the apps ship
