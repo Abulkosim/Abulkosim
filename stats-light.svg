@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="96" viewBox="0 0 840 96" role="img" aria-label="357 installer downloads, 45 releases, 2238 contributions in the last year, 195 public pull requests merged">
+<title>357 installer downloads, 45 releases, 2238 contributions in the last year, 195 public pull requests merged</title>
+<style>
+  text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif; fill: #1f2328; }
+  .mono { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; font-variant-numeric: tabular-nums; }
+  .s { fill: #59636e; }
+  .t { fill: #818b98; }
+  .grow { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); animation: grow .5s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes grow { to { transform: scaleY(1); } }
+  @media (prefers-reduced-motion: reduce) { .grow { animation: none; transform: none; } }
+</style>
+<rect x="0.5" y="0.5" width="839" height="95" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+<text x="28" y="52" class="mono" font-size="26" font-weight="500">357</text>
+<text x="28" y="72" class="s" font-size="13">installer downloads</text>
+<line x1="210" y1="24" x2="210" y2="72" stroke="#d0d7de"/><text x="238" y="52" class="mono" font-size="26" font-weight="500">45</text>
+<text x="238" y="72" class="s" font-size="13">releases shipped</text>
+<line x1="420" y1="24" x2="420" y2="72" stroke="#d0d7de"/><text x="448" y="52" class="mono" font-size="26" font-weight="500">2,238</text>
+<text x="448" y="72" class="s" font-size="13">contributions, past year</text>
+<line x1="630" y1="24" x2="630" y2="72" stroke="#d0d7de"/><text x="658" y="52" class="mono" font-size="26" font-weight="500">195</text>
+<text x="658" y="72" class="s" font-size="13">public PRs merged</text>
+</svg>

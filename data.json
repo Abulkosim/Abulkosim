@@ -1,0 +1,114 @@
+{
+  "generated": "2026-11-14T18:09:05.113Z",
+  "apps": [
+    {
+      "repo": "margin",
+      "name": "Margin",
+      "tagline": "Claude Code and Codex usage limits, across accounts",
+      "accent": [
+        "#6c886f",
+        "#b8d1ba"
+      ],
+      "stars": 4,
+      "forks": 1,
+      "version": "v0.11.0",
+      "released": "2026-11-10T21:20:35.000Z",
+      "downloads": 195,
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "releases": 19
+    },
+    {
+      "repo": "wick",
+      "name": "Wick",
+      "tagline": "Keeps your computer awake, for a time or while an app runs",
+      "accent": [
+        "#b8873a",
+        "#f0d39b"
+      ],
+      "stars": 3,
+      "forks": 0,
+      "version": "v0.8.0",
+      "released": "2026-11-10T21:09:39.000Z",
+      "downloads": 80,
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "releases": 9
+    },
+    {
+      "repo": "weir",
+      "name": "Weir",
+      "tagline": "Internet speed and connection checks from the menu bar",
+      "accent": [
+        "#2f7fbf",
+        "#7ab4e4"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "version": "v0.7.3",
+      "released": "2026-11-10T20:34:15.000Z",
+      "downloads": 67,
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "releases": 10
+    },
+    {
+      "repo": "tonearm",
+      "name": "Tonearm",
+      "tagline": "A mini player for the Spotify desktop app, in the menu bar",
+      "accent": [
+        "#c8692a",
+        "#f0954f"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "version": "v0.3.4",
+      "released": "2026-11-12T19:58:12.000Z",
+      "downloads": 15,
+      "platforms": [
+        "macOS"
+      ],
+      "releases": 7
+    }
+  ],
+  "typeprose": {
+    "repo": "typeprose",
+    "name": "typeprose",
+    "tagline": "Typing practice on real prose from public-domain books",
+    "stage": {
+      "light": {
+        "bg": "#e9e2d0",
+        "typed": "#2a2620",
+        "pending": "#857c6b",
+        "caret": "#a9761a",
+        "error": "#9a2e2e"
+      },
+      "dark": {
+        "bg": "#12100e",
+        "typed": "#e6e0d2",
+        "pending": "#6e675c",
+        "caret": "#c99a3c",
+        "error": "#b04a4a"
+      }
+    },
+    "stars": 1,
+    "commits": 135,
+    "passages": 140,
+    "pushed": "2026-08-01T18:02:33.000Z",
+    "passage": {
+      "author": "Mark Twain",
+      "title": "The Adventures of Tom Sawyer",
+      "text": "Injun Joe was believed to have killed five citizens of the village, but what of that? If he had been Satan himself there would have been plenty of weaklings ready to scribble their names to a pardon-petition, and drip a tear on it from their permanently impaired and leaky water-works.",
+      "line": "Injun Joe was believed to have killed five citizens of the village, but what of that?"
+    }
+  },
+  "mergedPrs": 195,
+  "contributions": 2238
+}
