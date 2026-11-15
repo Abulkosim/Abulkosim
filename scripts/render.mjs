@@ -29,6 +29,14 @@ const TYPEPROSE = {
   },
 };
 
+// Earthrise has no releases either. Its card shows a screenshot of the app.
+const EARTHRISE = {
+  repo: 'earthrise',
+  name: 'Earthrise',
+  tagline: 'Sunlight, Earth contact and power at the Moon’s south pole',
+  stack: 'NASA Space Apps 2026   ·   TypeScript, WebGL 2 and Python',
+};
+
 const INSTALLER = /\.(dmg|exe|msi|deb|rpm|AppImage)$/;
 const PLATFORM = [
   [/\.dmg$/, 'macOS'],
@@ -117,6 +125,14 @@ async function loadTypeprose() {
   };
 }
 
+async function loadEarthrise() {
+  const [info, commits] = await Promise.all([
+    gh(`/repos/${USER}/${EARTHRISE.repo}`),
+    count(`/repos/${USER}/${EARTHRISE.repo}/commits`),
+  ]);
+  return { ...EARTHRISE, stars: info.stargazers_count, commits, pushed: new Date(info.pushed_at) };
+}
+
 async function releases(repo) {
   const all = [];
   for (let page = 1; ; page++) {
@@ -147,14 +163,16 @@ async function load() {
       };
     }),
   );
-  const [merged, graph, typeprose] = await Promise.all([
+  const [merged, graph, typeprose, earthrise] = await Promise.all([
     gh(`/search/issues?q=${encodeURIComponent(`author:${USER} is:pr is:merged is:public`)}&per_page=1`),
     graphql(`query { user(login: "${USER}") { contributionsCollection { contributionCalendar { totalContributions } } } }`),
     loadTypeprose(),
+    loadEarthrise(),
   ]);
   return {
     apps,
     typeprose,
+    earthrise,
     mergedPrs: merged.total_count,
     contributions: graph.user.contributionsCollection.contributionCalendar.totalContributions,
   };
@@ -316,6 +334,32 @@ ${text}
   return svg(W, H, body, t, `typeprose: ${tp.tagline}. Today's passage: “${p.line}” ${p.author}, ${p.title}.`);
 }
 
+function earthriseCard(er, icon, shot, t) {
+  const imgX = 24, imgY = 112, imgW = W - 48, imgH = 445;
+  const H = imgY + imgH + 24;
+  const nameW = er.name.length * 10;
+  const stats = [
+    [num(er.commits), 'commits'],
+    [num(er.stars), er.stars === 1 ? 'star' : 'stars'],
+  ]
+    .map(([v, l], i) => {
+      const x = W - 28 - (1 - i) * 104;
+      return `<text x="${x}" y="52" class="mono" font-size="20" font-weight="500" text-anchor="end">${esc(v)}</text>
+<text x="${x}" y="72" class="t" font-size="12" text-anchor="end">${esc(l)}</text>`;
+    })
+    .join('\n');
+  const body = `<image x="30" y="30" width="52" height="52" href="data:image/png;base64,${icon}"/>
+<text x="108" y="48" font-size="20" font-weight="500">${esc(er.name)}</text>
+<text x="${108 + nameW + 8}" y="48" class="mono t" font-size="13">web</text>
+<text x="108" y="72" class="s" font-size="14">${esc(er.tagline)}</text>
+<text x="108" y="92" class="t" font-size="12">${esc(er.stack)}   ·   last commit ${esc(ago(er.pushed))}</text>
+${stats}
+<clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
+<image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
+<rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>`;
+  return svg(W, H, body, t, `Earthrise: ${er.tagline}. NASA Space Apps 2026. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
+}
+
 function cadenceCard(data, t, mode) {
   const H = 244;
   const DAY = 86400e3;
@@ -395,13 +439,15 @@ ${rows}
 
 const data = await load();
 const icons = Object.fromEntries(
-  await Promise.all([...APPS, TYPEPROSE].map(async (a) => [a.repo, (await readFile(new URL(`../assets/${a.repo}.png`, import.meta.url))).toString('base64')])),
+  await Promise.all([...APPS, TYPEPROSE, EARTHRISE].map(async (a) => [a.repo, (await readFile(new URL(`../assets/${a.repo}.png`, import.meta.url))).toString('base64')])),
 );
+const shot = (await readFile(new URL('../assets/earthrise.jpg', import.meta.url))).toString('base64');
 await mkdir(OUT, { recursive: true });
 for (const [mode, t] of Object.entries(THEMES)) {
   await writeFile(join(OUT, `stats-${mode}.svg`), statsCard(data, t));
   await writeFile(join(OUT, `cadence-${mode}.svg`), cadenceCard(data, t, mode));
   await writeFile(join(OUT, `typeprose-${mode}.svg`), typeproseCard(data.typeprose, icons.typeprose, t, mode));
+  await writeFile(join(OUT, `earthrise-${mode}.svg`), earthriseCard(data.earthrise, icons.earthrise, shot, t));
   for (const app of data.apps) await writeFile(join(OUT, `${app.repo}-${mode}.svg`), appCard(app, icons[app.repo], t));
 }
 await writeFile(join(OUT, 'data.json'), JSON.stringify({ generated: NOW, ...data, apps: data.apps.map(({ releases, ...a }) => ({ ...a, releases: releases.length })) }, null, 2) + '\n');

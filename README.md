@@ -33,6 +33,12 @@
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
 </picture>
 </a>
+<a href="https://github.com/Abulkosim/earthrise">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, for NASA Space Apps 2026, with a screenshot of the app" width="840" />
+</picture>
+</a>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-dark.svg" />
