@@ -192,6 +192,9 @@ function ago(date) {
   return 'just now';
 }
 
+// Stars only count once there are some.
+const starStat = (n) => (n > 0 ? [[num(n), n === 1 ? 'star' : 'stars']] : []);
+
 const day = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
 function svg(width, height, body, t, title) {
@@ -242,7 +245,7 @@ function appCard(app, icon, t) {
   const meta = [app.platforms.join(' · '), app.released && `released ${ago(app.released)}`].filter(Boolean).join('   ·   ');
   const stats = [
     [num(app.downloads), 'downloads'],
-    [num(app.stars), app.stars === 1 ? 'star' : 'stars'],
+    ...starStat(app.stars),
   ];
   const statsSvg = stats
     .map(([v, l], i) => {
@@ -257,7 +260,7 @@ function appCard(app, icon, t) {
 <text x="108" y="72" class="s" font-size="14">${esc(app.tagline)}</text>
 <text x="108" y="92" class="t" font-size="12">${esc(meta)}</text>
 ${statsSvg}`;
-  return svg(W, H, body, t, `${app.name} ${app.version}: ${app.tagline}. ${app.downloads} downloads, ${app.stars} stars.`);
+  return svg(W, H, body, t, `${app.name} ${app.version}: ${app.tagline}. ${app.downloads} downloads${app.stars ? `, ${app.stars} stars` : ''}.`);
 }
 
 function wrap(text, width) {
@@ -340,10 +343,11 @@ function earthriseCard(er, icon, shot, t) {
   const nameW = er.name.length * 10;
   const stats = [
     [num(er.commits), 'commits'],
-    [num(er.stars), er.stars === 1 ? 'star' : 'stars'],
-  ]
-    .map(([v, l], i) => {
-      const x = W - 28 - (1 - i) * 104;
+    ...starStat(er.stars),
+  ];
+  const statsSvg = stats
+    .map(([v, l], i, all) => {
+      const x = W - 28 - (all.length - 1 - i) * 104;
       return `<text x="${x}" y="52" class="mono" font-size="20" font-weight="500" text-anchor="end">${esc(v)}</text>
 <text x="${x}" y="72" class="t" font-size="12" text-anchor="end">${esc(l)}</text>`;
     })
@@ -353,7 +357,7 @@ function earthriseCard(er, icon, shot, t) {
 <text x="${108 + nameW + 8}" y="48" class="mono t" font-size="13">web</text>
 <text x="108" y="72" class="s" font-size="14">${esc(er.tagline)}</text>
 <text x="108" y="92" class="t" font-size="12">${esc(er.stack)}   ·   last commit ${esc(ago(er.pushed))}</text>
-${stats}
+${statsSvg}
 <clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
 <image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
 <rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>`;
