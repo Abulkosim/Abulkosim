@@ -34,7 +34,7 @@ const EARTHRISE = {
   repo: 'earthrise',
   name: 'Earthrise',
   tagline: 'Sunlight, Earth contact and power at the Moon’s south pole',
-  stack: 'NASA Space Apps 2026   ·   TypeScript, WebGL 2 and Python',
+  stack: 'First place in Uzbekistan, NASA Space Apps 2026   ·   TypeScript, WebGL 2 and Python',
 };
 
 const INSTALLER = /\.(dmg|exe|msi|deb|rpm|AppImage)$/;
@@ -361,7 +361,7 @@ ${statsSvg}
 <clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
 <image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
 <rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>`;
-  return svg(W, H, body, t, `Earthrise: ${er.tagline}. NASA Space Apps 2026. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
+  return svg(W, H, body, t, `Earthrise: ${er.tagline}. First place in Uzbekistan at NASA Space Apps 2026. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
 }
 
 function cadenceCard(data, t, mode) {
