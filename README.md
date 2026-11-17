@@ -36,9 +36,11 @@
 <a href="https://github.com/Abulkosim/earthrise">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, for NASA Space Apps 2026, with a screenshot of the app" width="840" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, first place in Uzbekistan at NASA Space Apps 2026, with a screenshot of the app" width="840" />
 </picture>
 </a>
+
+Earthrise is a team project with [@dorofeeva-maria](https://github.com/dorofeeva-maria) and [@kasevvlad](https://github.com/kasevvlad). It took first place in Uzbekistan at NASA Space Apps 2026 and goes on to the global round.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-dark.svg" />
