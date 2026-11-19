@@ -339,17 +339,31 @@ ${text}
   return svg(W, H, body, t, `typeprose: ${tp.tagline}. Today's passage: “${p.line}” ${p.author}, ${p.title}.`);
 }
 
-// A flat gold label in the top right corner of the screenshot, like a
-// thumbnail badge. Same colors in both themes: it sits on the image.
+// Helvetica widths per 1000 units, regular and bold. SVG text can't be
+// measured at render time, so badge text gets an explicit textLength from
+// these: its padding then holds in whatever font the viewer has.
+const HELV = {
+  r: { ' ': 278, '·': 278, '0': 556, '1': 556, '2': 556, '6': 556, a: 556, b: 556, c: 500, e: 556, i: 222, k: 500, l: 222, n: 556, p: 556, s: 500, t: 278, z: 500, A: 667, N: 722, P: 667, S: 667, U: 722 },
+  b: { ' ': 278, '1': 556, a: 556, c: 556, e: 556, l: 278, p: 611, s: 556, t: 333 },
+};
+const textWidth = (str, size, weight = 'r') => [...str].reduce((n, ch) => n + (HELV[weight][ch] ?? 600), 0) * size / 1000;
+
+// A small badge in the top right corner of the screenshot, in the style of
+// a shadcn/ui badge. Same colors in both themes: it sits on the image.
 function awardBadge([title, sub], right, top) {
-  const gold = '#e3b04b', ink = '#1b1408';
-  const w = 262, h = 52, x = right - w;
-  return `<filter id="lift" x="-20%" y="-30%" width="140%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity=".45"/></filter>
-<g filter="url(#lift)"><rect x="${x}" y="${top}" width="${w}" height="${h}" rx="8" fill="${gold}"/></g>
-<circle cx="${x + 30}" cy="${top + h / 2}" r="16" fill="${ink}"/>
-<text x="${x + 30}" y="${top + h / 2 + 6}" font-size="17" font-weight="700" text-anchor="middle" style="fill:${gold}">1</text>
-<text x="${x + 56}" y="${top + 23}" font-size="17" font-weight="700" style="fill:${ink}">${esc(title)}</text>
-<text x="${x + 56}" y="${top + 40}" font-size="11.5" font-weight="500" style="fill:${ink}">${esc(sub)}</text>`;
+  const size = 13, padX = 12, icon = 14, gap = 7, h = 30;
+  const titleW = textWidth(title, size, 'b');
+  const subText = `  ·  ${sub}`;
+  const subW = textWidth(subText, size);
+  const w = padX + icon + gap + titleW + subW + padX;
+  const x = right - w, cy = top + h / 2;
+  const tx = x + padX + icon + gap;
+  const trophy = 'M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z';
+  return `<filter id="lift" x="-10%" y="-40%" width="120%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".4"/></filter>
+<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="7" fill="#fafafa" filter="url(#lift)"/>
+<path d="${trophy}" transform="translate(${x + padX} ${cy - icon / 2}) scale(${icon / 24})" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="${tx}" y="${cy + 4.5}" font-size="${size}" font-weight="600" textLength="${titleW.toFixed(1)}" lengthAdjust="spacing" style="fill:#09090b">${esc(title)}</text>
+<text x="${tx + titleW}" y="${cy + 4.5}" font-size="${size}" font-weight="500" textLength="${subW.toFixed(1)}" lengthAdjust="spacing" xml:space="preserve" style="fill:#52525b">${esc(subText)}</text>`;
 }
 
 function earthriseCard(er, icon, shot, t) {
@@ -376,7 +390,7 @@ ${statsSvg}
 <clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
 <image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
 <rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>
-${awardBadge(er.award, imgX + imgW - 16, imgY + 16)}`;
+${awardBadge(er.award, imgX + imgW - 14, imgY + 14)}`;
   return svg(W, H, body, t, `Earthrise: ${er.tagline}. First place in Uzbekistan at NASA Space Apps 2026. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
 }
 
