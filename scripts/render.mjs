@@ -34,7 +34,9 @@ const EARTHRISE = {
   repo: 'earthrise',
   name: 'Earthrise',
   tagline: 'Sunlight, Earth contact and power at the Moon’s south pole',
-  stack: 'First place in Uzbekistan, NASA Space Apps 2026   ·   TypeScript, WebGL 2 and Python',
+  stack: 'NASA Space Apps 2026   ·   TypeScript, WebGL 2 and Python',
+  // Shown as a badge on the screenshot.
+  award: ['1st place', 'NASA Space Apps 2026 · Uzbekistan'],
 };
 
 const INSTALLER = /\.(dmg|exe|msi|deb|rpm|AppImage)$/;
@@ -337,6 +339,19 @@ ${text}
   return svg(W, H, body, t, `typeprose: ${tp.tagline}. Today's passage: “${p.line}” ${p.author}, ${p.title}.`);
 }
 
+// A flat gold label in the top right corner of the screenshot, like a
+// thumbnail badge. Same colors in both themes: it sits on the image.
+function awardBadge([title, sub], right, top) {
+  const gold = '#e3b04b', ink = '#1b1408';
+  const w = 262, h = 52, x = right - w;
+  return `<filter id="lift" x="-20%" y="-30%" width="140%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity=".45"/></filter>
+<g filter="url(#lift)"><rect x="${x}" y="${top}" width="${w}" height="${h}" rx="8" fill="${gold}"/></g>
+<circle cx="${x + 30}" cy="${top + h / 2}" r="16" fill="${ink}"/>
+<text x="${x + 30}" y="${top + h / 2 + 6}" font-size="17" font-weight="700" text-anchor="middle" style="fill:${gold}">1</text>
+<text x="${x + 56}" y="${top + 23}" font-size="17" font-weight="700" style="fill:${ink}">${esc(title)}</text>
+<text x="${x + 56}" y="${top + 40}" font-size="11.5" font-weight="500" style="fill:${ink}">${esc(sub)}</text>`;
+}
+
 function earthriseCard(er, icon, shot, t) {
   const imgX = 24, imgY = 112, imgW = W - 48, imgH = 445;
   const H = imgY + imgH + 24;
@@ -360,7 +375,8 @@ function earthriseCard(er, icon, shot, t) {
 ${statsSvg}
 <clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
 <image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
-<rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>`;
+<rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>
+${awardBadge(er.award, imgX + imgW - 16, imgY + 16)}`;
   return svg(W, H, body, t, `Earthrise: ${er.tagline}. First place in Uzbekistan at NASA Space Apps 2026. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
 }
 
