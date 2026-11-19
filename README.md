@@ -40,7 +40,7 @@
 </picture>
 </a>
 
-Earthrise is a team project with [@dorofeeva-maria](https://github.com/dorofeeva-maria) and [@kasevvlad](https://github.com/kasevvlad). It took first place in Uzbekistan at NASA Space Apps 2026 and goes on to the global round.
+Earthrise is a team project. It took first place in Uzbekistan at NASA Space Apps 2026. Next it goes to the global round.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-dark.svg" />
