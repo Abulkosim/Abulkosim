@@ -1,26 +1,26 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-dark.svg?v=4" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-light.svg?v=4" alt="Hi, I'm Abulkosim. I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/hero-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/hero-light.svg" alt="Hi, I'm Abulkosim. I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/apps-dark.svg?v=4" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/apps-light.svg?v=4" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/apps-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
 </picture>
 <a href="https://github.com/Abulkosim/typeprose">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-dark.svg?v=4" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-light.svg?v=4" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/typeprose-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
 </picture>
 </a>
 <a href="https://github.com/Abulkosim/earthrise">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-dark.svg?v=4" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-light.svg?v=4" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/earthrise-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
 </picture>
 </a>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-dark.svg?v=4" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-light.svg?v=4" alt="Releases per day since the first release, and the latest releases" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/cadence-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/b5abf40024fc7d31242fb844f7fb00c743aac5ed/cadence-light.svg" alt="Releases per day since the first release, and the latest releases" width="840" />
 </picture>
 
 ### Install
