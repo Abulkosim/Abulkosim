@@ -1,26 +1,26 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/hero-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/hero-light.svg" alt="I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/hero-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/hero-light.svg" alt="I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
 </picture>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/apps-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/apps-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
 </picture>
 <a href="https://github.com/Abulkosim/typeprose">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/typeprose-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/typeprose-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
 </picture>
 </a>
 <a href="https://github.com/Abulkosim/earthrise">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/earthrise-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/earthrise-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
 </picture>
 </a>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/cadence-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/cadence-light.svg" alt="Releases per day since the first release, and the latest releases" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/cadence-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/cadence-light.svg" alt="Releases per day since the first release, and the latest releases" width="840" />
 </picture>
 
 ### Install
