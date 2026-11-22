@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// Renders the profile cards from live GitHub data. No dependencies.
-// Usage: GITHUB_TOKEN=... node scripts/render.mjs [outDir]
+// Renders the profile from live GitHub data. No dependencies.
+// Usage: scripts/fonts.sh && GITHUB_TOKEN=... node scripts/render.mjs [outDir]
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
 
 const USER = 'Abulkosim';
 const OUT = process.argv[2] ?? 'out';
@@ -23,9 +24,10 @@ const TYPEPROSE = {
   repo: 'typeprose',
   name: 'typeprose',
   tagline: 'Typing practice on real prose from public-domain books',
+  stack: 'React, Fastify and Postgres',
   stage: {
-    light: { bg: '#e9e2d0', typed: '#2a2620', pending: '#857c6b', caret: '#a9761a', error: '#9a2e2e' },
-    dark: { bg: '#12100e', typed: '#e6e0d2', pending: '#6e675c', caret: '#c99a3c', error: '#b04a4a' },
+    light: { bg: '#f4f1ea', line: '#e7e2d6', typed: '#1c1b19', pending: '#9a9385', caret: '#b07d1e', error: '#b23a3a' },
+    dark: { bg: '#141311', line: '#24221e', typed: '#ebe6dc', pending: '#6b665d', caret: '#d1a24a', error: '#c25555' },
   },
 };
 
@@ -34,9 +36,9 @@ const EARTHRISE = {
   repo: 'earthrise',
   name: 'Earthrise',
   tagline: 'Sunlight, Earth contact and power at the Moon’s south pole',
-  stack: 'Team project   ·   NASA Space Apps 2026, global round next   ·   TypeScript, WebGL 2 and Python',
+  stack: 'Team project · TypeScript, WebGL 2 and Python',
   // Shown as a badge on the screenshot.
-  award: ['1st place', 'NASA Space Apps 2026 · Uzbekistan'],
+  award: ['1st place', 'NASA Space Apps 2026, Uzbekistan'],
 };
 
 const INSTALLER = /\.(dmg|exe|msi|deb|rpm|AppImage)$/;
@@ -46,14 +48,16 @@ const PLATFORM = [
   [/\.(deb|rpm|AppImage)$/, 'Linux'],
 ];
 
+// Neutral greys, close to the ones Linear uses. Panels sit a step off the
+// page in both themes; color comes only from the content.
 const THEMES = {
   light: {
-    card: '#ffffff', line: '#d1d9e0', rule: '#eaeef2', ink: '#1f2328', secondary: '#59636e', tertiary: '#818b98',
-    bar: '#59636e',
+    card: '#fcfcfd', line: '#e3e4e8', rule: '#eeeff2', glow: 'rgba(255,255,255,0)',
+    ink: '#08090a', secondary: '#62666d', tertiary: '#8a8f98', bar: '#c8cad0', barNow: '#08090a',
   },
   dark: {
-    card: '#0d1117', line: '#3d444d', rule: '#21262d', ink: '#f0f6fc', secondary: '#9198a1', tertiary: '#656c76',
-    bar: '#9198a1',
+    card: '#0f1011', line: '#23252a', rule: '#1b1c1f', glow: 'rgba(255,255,255,0.07)',
+    ink: '#f7f8f8', secondary: '#8a8f98', tertiary: '#62666d', bar: '#34363c', barNow: '#f7f8f8',
   },
 };
 
@@ -115,7 +119,7 @@ async function loadTypeprose() {
   // A first sentence short enough for two lines on the card.
   const short = passages
     .map((p) => ({ ...p, line: p.text.match(/^.+?[.!?](?:[’”"])?(?=\s|$)/)?.[0] ?? p.text }))
-    .filter((p) => p.line.length >= 60 && p.line.length <= 150);
+    .filter((p) => p.line.length >= 60 && p.line.length <= 140);
   const today = Math.floor(NOW.getTime() / 86400e3);
   return {
     ...TYPEPROSE,
@@ -157,7 +161,7 @@ async function load() {
         ...app,
         stars: info.stargazers_count,
         forks: info.forks_count,
-        version: latest?.tag_name ?? '—',
+        version: latest?.tag_name ?? '–',
         released: latest ? new Date(latest.published_at) : null,
         downloads: installers.reduce((n, a) => n + a.download_count, 0),
         platforms,
@@ -180,12 +184,48 @@ async function load() {
   };
 }
 
+// --- type ---------------------------------------------------------------
+//
+// Inter and JetBrains Mono (both under the SIL Open Font License) are embedded
+// in every card, so the cards set the same way on every machine. The workflow
+// fetches the latin subsets from npm into assets/fonts; the hashes pin them.
+
+const FONT_FILES = {
+  inter: ['inter.woff2', 'f052ee44c3728dfd23aba8a4567150bc314d23903026fbb6ad089422c2df56af'],
+  mono: ['jetbrains-mono.woff2', '14425ba9c695763c1547f48a206b7aa60350a33ae23de09f0407877f3fcd89eb'],
+};
+const FONTS = {};
+for (const [key, [file, sha256]] of Object.entries(FONT_FILES)) {
+  const bytes = await readFile(new URL(`../assets/fonts/${file}`, import.meta.url));
+  const actual = createHash('sha256').update(bytes).digest('hex');
+  if (actual !== sha256) throw new Error(`assets/fonts/${file}: sha256 ${actual}, expected ${sha256}`);
+  FONTS[key] = bytes.toString('base64');
+}
+const SANS = `Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif`;
+const MONO = `'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+
+// Inter advance widths in em, by character class. Only used to size pills and
+// to place text after text; each such run also gets a textLength, so an error
+// here moves letter spacing by a fraction of a pixel, not the layout.
+const NARROW = new Set([...' .,:;\'’!|il·jtfrI()[]']);
+const WIDE = new Set([...'mwMW@%']);
+function measure(str, size, weight = 400) {
+  const em = [...str].reduce((n, ch) => {
+    if (NARROW.has(ch)) return n + (ch === ' ' ? 0.26 : 0.3);
+    if (WIDE.has(ch)) return n + 0.84;
+    if (/[0-9]/.test(ch)) return n + 0.6;
+    if (/[A-Z]/.test(ch)) return n + 0.68;
+    return n + 0.55;
+  }, 0);
+  return em * size * (weight >= 500 ? 1.035 : 1);
+}
+// Inter's tracking for its size, tighter as it gets bigger.
+const track = (size) => +((size >= 32 ? -0.022 : size >= 20 ? -0.017 : size >= 15 ? -0.011 : 0) * size).toFixed(2);
+
 // --- svg helpers --------------------------------------------------------
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const num = (n) => (n >= 10000 ? `${(n / 1000).toFixed(n >= 100000 ? 0 : 1)}k` : n.toLocaleString('en-US'));
-const SANS = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif`;
-const MONO = `ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace`;
 
 function ago(date) {
   const s = (NOW - date) / 1000;
@@ -196,79 +236,135 @@ function ago(date) {
 
 const day = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
-function svg(width, height, body, t, title, frame = true) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}">
+// Framed cards carry 16px of clear space below them, so they stack with a
+// gap on the page; GitHub strips any margin set in the markdown.
+function svg(width, height, body, t, title, { frame = true, mono = false, below = frame ? 16 : 0 } = {}) {
+  const faces = [
+    `@font-face { font-family: Inter; font-weight: 100 900; src: url(data:font/woff2;base64,${FONTS.inter}) format('woff2'); }`,
+    mono ? `@font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url(data:font/woff2;base64,${FONTS.mono}) format('woff2'); }` : '',
+  ].filter(Boolean).join('\n  ');
+  const panel = frame
+    ? `<rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="12" fill="${t.card}" stroke="${t.line}"/>
+<path d="M14 0.5 H${width - 14}" stroke="${t.glow}"/>`
+    : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height + below}" viewBox="0 0 ${width} ${height + below}" role="img" aria-label="${esc(title)}">
 <title>${esc(title)}</title>
 <style>
-  text { font-family: ${SANS}; fill: ${t.ink}; }
-  .mono { font-family: ${MONO}; font-variant-numeric: tabular-nums; }
+  ${faces}
+  text { font-family: ${SANS}; fill: ${t.ink}; font-feature-settings: 'cv11'; }
+  .n { font-feature-settings: 'cv11', 'tnum'; }
+  .mono { font-family: ${MONO}; font-feature-settings: normal; }
   .s { fill: ${t.secondary}; }
   .t { fill: ${t.tertiary}; }
+  .m { font-weight: 510; }
 </style>
-${frame ? `<rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="12" fill="${t.card}" stroke="${t.line}"/>` : ''}
+${panel}
 ${body}
 </svg>
 `;
 }
 
+// A title the way Linear writes one: the name in ink, one sentence in grey.
+function heading(x, y, lead, rest, size = 15) {
+  return `<text x="${x}" y="${y}" font-size="${size}" letter-spacing="${track(size)}" xml:space="preserve"><tspan class="m">${esc(lead)}</tspan><tspan class="s"> ${esc(rest)}</tspan></text>`;
+}
+
 // --- cards --------------------------------------------------------------
 //
-// Three text sizes (16 names, 14 body and figures, 12 meta), weights 400 and
-// 500, one sans and one mono. Color comes only from the content: the app
-// icons, the typeprose passage and the Earthrise screenshot.
+// One headline at 40, titles at 15, body at 13 and 14, meta at 12. Weights
+// 400 and 510, one sans and one mono.
 
-const dot = '   ·   ';
-const fig = (v) => `<tspan class="mono">${esc(v)}</tspan>`;
+// The top of the page: the latest release, one line, one sentence, and the
+// figures behind them. No frame, so it reads as the page itself.
+function heroCard(data, t) {
+  const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
+  const last = all[0];
+  const H = 316;
 
-// One quiet line of totals, no frame.
-function statsCard(data, t) {
+  let pill = '';
+  if (last) {
+    const lead = 'Latest';
+    const rest = `${last.name} ${last.tag}, ${ago(last.at)}`;
+    const leadW = measure(lead, 13, 510), restW = measure(rest, 13);
+    const w = 26 + leadW + 21 + restW + 14;
+    pill = `<rect x="0.5" y="0.5" width="${(w - 1).toFixed(1)}" height="29" rx="15" fill="${t.card}" stroke="${t.line}"/>
+<circle cx="15" cy="15" r="3" fill="#4cb782"/>
+<text x="26" y="19.5" font-size="13" class="m" textLength="${leadW.toFixed(1)}" lengthAdjust="spacing">${lead}</text>
+<line x1="${(26 + leadW + 10.5).toFixed(1)}" y1="9" x2="${(26 + leadW + 10.5).toFixed(1)}" y2="21" stroke="${t.line}"/>
+<text x="${(26 + leadW + 21).toFixed(1)}" y="19.5" font-size="13" class="s" textLength="${restW.toFixed(1)}" lengthAdjust="spacing">${esc(rest)}</text>`;
+  }
+
+  const head = ['Small, focused software', 'for the desktop and the web.']
+    .map((l, i) => `<text x="-1.5" y="${96 + i * 48}" font-size="40" class="m" letter-spacing="${track(40)}">${esc(l)}</text>`)
+    .join('\n');
+  const sub = ['Menu bar apps for macOS, Windows and Linux, and a few projects for the web.', 'Open source, built in public, with no accounts and no telemetry.']
+    .map((l, i) => `<text x="0" y="${188 + i * 25}" font-size="16" class="s" letter-spacing="${track(16)}">${esc(l)}</text>`)
+    .join('\n');
+
   const downloads = data.apps.reduce((n, a) => n + a.downloads, 0);
-  const shipped = data.apps.reduce((n, a) => n + a.releases.length, 0);
-  const parts = [
-    [num(downloads), 'installer downloads'],
-    [num(shipped), 'releases'],
-    [num(data.contributions), 'contributions in the past year'],
-    [num(data.mergedPrs), 'merged public PRs'],
-  ]
-    .map(([v, l]) => `<tspan class="mono">${esc(v)}</tspan><tspan class="s"> ${esc(l)}</tspan>`)
-    .join(`<tspan class="t">${dot}</tspan>`);
-  return svg(W, 32, `<text x="1" y="21" font-size="14" xml:space="preserve">${parts}</text>`, t,
-    `${num(downloads)} installer downloads, ${shipped} releases, ${data.contributions} contributions in the past year, ${data.mergedPrs} merged public pull requests`, false);
+  const figures = [
+    [num(downloads), 'Installer downloads'],
+    [num(all.length), 'Releases'],
+    [num(data.contributions), 'Contributions, last 12 months'],
+    [num(data.mergedPrs), 'Merged public PRs'],
+  ];
+  const colW = W / figures.length;
+  const stats = figures
+    .map(([v, l], i) => {
+      const x = i * colW + (i ? 20 : 0);
+      const sep = i ? `<line x1="${i * colW + 0.5}" y1="258" x2="${i * colW + 0.5}" y2="${H - 2}" stroke="${t.rule}"/>` : '';
+      return `${sep}<text x="${x}" y="282" font-size="24" class="m n" letter-spacing="${track(24)}">${esc(v)}</text>
+<text x="${x}" y="306" font-size="13" class="t">${esc(l)}</text>`;
+    })
+    .join('\n');
+
+  const body = `${pill}
+${head}
+${sub}
+<line x1="0" y1="244.5" x2="${W}" y2="244.5" stroke="${t.rule}"/>
+${stats}`;
+  return svg(W, H, body, t,
+    `Small, focused software for the desktop and the web. ${num(downloads)} installer downloads, ${all.length} releases, ${data.contributions} contributions in the last 12 months, ${data.mergedPrs} merged public pull requests.`,
+    { frame: false, below: 36 });
 }
 
 // All four apps in one panel, one row each, figures in aligned columns.
 function appsCard(apps, icons, t) {
-  const top = 52, rowH = 60;
-  const H = top + apps.length * rowH + 8;
-  const col = { downloads: 600, stars: 680, released: W - 24 };
-  const head = `<text x="24" y="32" font-size="14" font-weight="500">Apps</text>
-<text x="${col.downloads}" y="32" class="t" font-size="12" text-anchor="end">downloads</text>
-<text x="${col.stars}" y="32" class="t" font-size="12" text-anchor="end">stars</text>
-<text x="${col.released}" y="32" class="t" font-size="12" text-anchor="end">last release</text>
-<line x1="24" y1="${top - 0.5}" x2="${W - 24}" y2="${top - 0.5}" stroke="${t.rule}"/>`;
+  const top = 64, rowH = 64;
+  const H = top + apps.length * rowH + 10;
+  const col = { downloads: 588, stars: 672, released: W - 28 };
+  const head = `${heading(28, 38, 'Apps.', 'Four menu bar apps, built with Rust, Swift and TypeScript.')}
+<text x="${col.downloads}" y="38" class="t" font-size="12" text-anchor="end">Downloads</text>
+<text x="${col.stars}" y="38" class="t" font-size="12" text-anchor="end">Stars</text>
+<text x="${col.released}" y="38" class="t" font-size="12" text-anchor="end">Released</text>
+<line x1="28" y1="${top - 0.5}" x2="${W - 28}" y2="${top - 0.5}" stroke="${t.rule}"/>`;
   const rows = apps
     .map((a, i) => {
       const y = top + i * rowH;
-      const rule = i < apps.length - 1 ? `<line x1="72" y1="${y + rowH - 0.5}" x2="${W - 24}" y2="${y + rowH - 0.5}" stroke="${t.rule}"/>` : '';
-      return `<image x="24" y="${y + 14}" width="32" height="32" href="data:image/png;base64,${icons[a.repo]}"/>
-<text x="72" y="${y + 27}" font-size="14" xml:space="preserve"><tspan font-weight="500">${esc(a.name)}</tspan><tspan class="mono t" font-size="12">  ${esc(a.version)}</tspan><tspan class="t" font-size="12">${dot}${esc(a.platforms.join(', '))}</tspan></text>
-<text x="72" y="${y + 46}" class="s" font-size="12">${esc(a.tagline)}</text>
-<text x="${col.downloads}" y="${y + 35}" class="mono" font-size="14" text-anchor="end">${esc(num(a.downloads))}</text>
-${a.stars > 0 ? `<text x="${col.stars}" y="${y + 35}" class="mono s" font-size="14" text-anchor="end">${esc(num(a.stars))}</text>` : ''}
-<text x="${col.released}" y="${y + 35}" class="mono t" font-size="12" text-anchor="end">${esc(a.released ? ago(a.released) : '—')}</text>
+      const rule = i < apps.length - 1 ? `<line x1="80" y1="${y + rowH - 0.5}" x2="${W - 28}" y2="${y + rowH - 0.5}" stroke="${t.rule}"/>` : '';
+      const nameW = measure(a.name, 14, 510);
+      return `<image x="28" y="${y + 14}" width="36" height="36" href="data:image/png;base64,${icons[a.repo]}"/>
+<text x="80" y="${y + 28}" font-size="14" class="m" textLength="${nameW.toFixed(1)}" lengthAdjust="spacing">${esc(a.name)}</text>
+<text x="${(80 + nameW + 10).toFixed(1)}" y="${y + 28}" font-size="12" class="mono t">${esc(a.version)}</text>
+<text x="80" y="${y + 47}" class="s" font-size="13">${esc(a.tagline)}</text>
+<text x="${col.downloads}" y="${y + 37}" class="n" font-size="14" text-anchor="end">${esc(num(a.downloads))}</text>
+<text x="${col.stars}" y="${y + 37}" class="s n" font-size="14" text-anchor="end">${a.stars > 0 ? esc(num(a.stars)) : '–'}</text>
+<text x="${col.released}" y="${y + 37}" class="t" font-size="13" text-anchor="end">${esc(a.released ? ago(a.released) : '–')}</text>
 ${rule}`;
     })
     .join('\n');
-  const label = apps.map((a) => `${a.name} ${a.version}: ${a.tagline}, ${a.downloads} downloads${a.stars ? `, ${a.stars} stars` : ''}`).join('. ');
-  return svg(W, H, `${head}\n${rows}`, t, `Apps. ${label}.`);
+  const label = apps.map((a) => `${a.name} ${a.version}, for ${a.platforms.join(', ')}: ${a.tagline}, ${a.downloads} downloads${a.stars ? `, ${a.stars} stars` : ''}`).join('. ');
+  return svg(W, H, `${head}\n${rows}`, t, `Apps. ${label}.`, { mono: true });
 }
 
-// Shared header for the web projects: icon, name, one line, one meta line.
-function projectHeader(p, icon, meta) {
-  return `<image x="24" y="24" width="44" height="44" href="data:image/png;base64,${icon}"/>
-<text x="84" y="42" font-size="16" xml:space="preserve"><tspan font-weight="500">${esc(p.name)}</tspan><tspan class="mono t" font-size="12">  web</tspan></text>
-<text x="84" y="64" class="s" font-size="14">${esc(p.tagline)}</text>
-<text x="84" y="84" class="t" font-size="12" xml:space="preserve">${meta}</text>`;
+// Shared header for the web projects: icon, name, one line, one meta label.
+function projectHeader(p, icon, meta, t) {
+  const nameW = measure(p.name, 15, 510);
+  return `<image x="28" y="28" width="44" height="44" href="data:image/png;base64,${icon}"/>
+<text x="88" y="46" font-size="15" class="m" textLength="${nameW.toFixed(1)}" lengthAdjust="spacing">${esc(p.name)}</text>
+<text x="${(88 + nameW + 10).toFixed(1)}" y="46" font-size="12" class="mono t">web</text>
+<text x="88" y="68" class="s" font-size="14">${esc(p.tagline)}</text>
+<text x="${W - 28}" y="46" class="t" font-size="12" text-anchor="end">${esc(meta)}</text>`;
 }
 
 function wrap(text, width) {
@@ -284,12 +380,12 @@ function wrap(text, width) {
 function typeproseCard(tp, icon, t, mode) {
   const c = tp.stage[mode];
   const p = tp.passage;
-  const CH = 9; // every glyph is forced to this advance with textLength
-  const stageX = 24, stageY = 108, stageW = W - 48, padX = 24;
+  const CH = 9; // JetBrains Mono at 15px advances exactly 9px a glyph
+  const stageX = 28, stageY = 96, stageW = W - 56, padX = 28;
   const cols = Math.floor((stageW - padX * 2) / CH);
   const lines = wrap(p.line, cols).slice(0, 2);
-  const stageH = 40 + lines.length * 28 + 24;
-  const H = stageY + stageH + 24;
+  const stageH = 46 + lines.length * 30 + 30;
+  const H = stageY + stageH + 28;
 
   // Mid-run: about 40% typed, one missed key a few letters back.
   const total = lines.reduce((n, l) => n + l.length, 0);
@@ -301,7 +397,7 @@ function typeproseCard(tp, icon, t, mode) {
   let offset = 0;
   const text = lines
     .map((line, li) => {
-      const y = stageY + 44 + li * 28;
+      const y = stageY + 48 + li * 30;
       const x = stageX + padX;
       const spans = [...line].map((ch, i) => {
         const k = offset + i;
@@ -310,67 +406,57 @@ function typeproseCard(tp, icon, t, mode) {
       });
       let extra = '';
       if (miss >= offset && miss < offset + line.length) {
-        extra += `<rect x="${x + (miss - offset) * CH}" y="${y + 4}" width="${CH}" height="2" fill="${c.error}"/>`;
+        extra += `<rect x="${x + (miss - offset) * CH}" y="${y + 5}" width="${CH}" height="1.5" fill="${c.error}"/>`;
       }
       if (caret >= offset && caret <= offset + line.length) {
-        extra += `<rect x="${x + (caret - offset) * CH - 1}" y="${y - 16}" width="2" height="22" rx="1" fill="${c.caret}"/>`;
+        extra += `<rect x="${x + (caret - offset) * CH - 1}" y="${y - 16}" width="2" height="21" rx="1" fill="${c.caret}"/>`;
       }
       offset += line.length + 1;
       return `<text x="${x}" y="${y}" class="mono" font-size="15" textLength="${line.length * CH}" lengthAdjust="spacing">${spans.join('')}</text>${extra}`;
     })
     .join('\n');
 
-  const meta = `React, Fastify and Postgres${dot}${fig(num(tp.passages))} passages${dot}${fig(num(tp.commits))} commits${tp.stars > 0 ? `${dot}${fig(num(tp.stars))} ${tp.stars === 1 ? 'star' : 'stars'}` : ''}`;
-  const body = `${projectHeader(tp, icon, meta)}
-<rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="8" fill="${c.bg}"/>
+  const meta = `${tp.stack} · ${num(tp.passages)} passages · ${num(tp.commits)} commits`;
+  const body = `${projectHeader(tp, icon, meta, t)}
+<rect x="${stageX + 0.5}" y="${stageY + 0.5}" width="${stageW - 1}" height="${stageH - 1}" rx="10" fill="${c.bg}" stroke="${c.line}"/>
 ${text}
-<text x="${stageX + padX}" y="${stageY + stageH - 20}" font-size="12" style="fill:${c.pending}">${esc(p.author)}, ${esc(p.title)}</text>
-<text x="${stageX + stageW - padX}" y="${stageY + stageH - 20}" font-size="12" style="fill:${c.pending}" text-anchor="end">today’s passage</text>`;
-  return svg(W, H, body, t, `typeprose: ${tp.tagline}. Today's passage: “${p.line}” ${p.author}, ${p.title}.`);
+<text x="${stageX + padX}" y="${stageY + stageH - 24}" font-size="12" style="fill:${c.pending}">${esc(p.author)}, ${esc(p.title)}</text>
+<text x="${stageX + stageW - padX}" y="${stageY + stageH - 24}" font-size="12" style="fill:${c.pending}" text-anchor="end">Today’s passage</text>`;
+  return svg(W, H, body, t, `typeprose: ${tp.tagline}. Today's passage: “${p.line}” ${p.author}, ${p.title}.`, { mono: true });
 }
 
-// Helvetica widths per 1000 units, regular and bold. SVG text can't be
-// measured at render time, so badge text gets an explicit textLength from
-// these: its padding then holds in whatever font the viewer has.
-const HELV = {
-  r: { ' ': 278, '·': 278, '0': 556, '1': 556, '2': 556, '6': 556, a: 556, b: 556, c: 500, e: 556, i: 222, k: 500, l: 222, n: 556, p: 556, s: 500, t: 278, z: 500, A: 667, N: 722, P: 667, S: 667, U: 722 },
-  b: { ' ': 278, '1': 556, a: 556, c: 556, e: 556, l: 278, p: 611, s: 556, t: 333 },
-};
-const textWidth = (str, size, weight = 'r') => [...str].reduce((n, ch) => n + (HELV[weight][ch] ?? 600), 0) * size / 1000;
-
-// A small badge in the top right corner of the screenshot, like a shadcn/ui
-// outline badge: flat, a hairline border, no shadow. Same colors in both
-// themes, since it sits on the image.
+// A small badge in the top right corner of the screenshot: dark glass and a
+// hairline, the same in both themes since it sits on the image.
 function awardBadge([title, sub], right, top) {
-  const size = 12, padX = 10, icon = 14, gap = 6, h = 28;
-  const titleW = textWidth(title, size, 'b');
-  const subText = `  ·  ${sub}`;
-  const subW = textWidth(subText, size);
-  const w = padX + icon + gap + titleW + subW + padX;
+  const size = 12, padX = 12, icon = 13, gap = 7, h = 28;
+  const titleW = measure(title, size, 510);
+  const subW = measure(sub, size);
+  const w = padX + icon + gap + titleW + 17 + subW + padX;
   const x = right - w, cy = top + h / 2;
   const tx = x + padX + icon + gap;
   const trophy = 'M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z';
-  return `<rect x="${x + 0.5}" y="${top + 0.5}" width="${w - 1}" height="${h - 1}" rx="6" fill="#fafafa" stroke="#e4e4e7"/>
-<path d="${trophy}" transform="translate(${x + padX} ${cy - icon / 2}) scale(${icon / 24})" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="${tx}" y="${cy + 4}" font-size="${size}" font-weight="600" textLength="${titleW.toFixed(1)}" lengthAdjust="spacing" style="fill:#09090b">${esc(title)}</text>
-<text x="${tx + titleW}" y="${cy + 4}" font-size="${size}" textLength="${subW.toFixed(1)}" lengthAdjust="spacing" xml:space="preserve" style="fill:#52525b">${esc(subText)}</text>`;
+  return `<rect x="${(x + 0.5).toFixed(1)}" y="${top + 0.5}" width="${(w - 1).toFixed(1)}" height="${h - 1}" rx="8" fill="#0f1011" fill-opacity="0.88" stroke="#ffffff" stroke-opacity="0.14"/>
+<path d="${trophy}" transform="translate(${(x + padX).toFixed(1)} ${cy - icon / 2}) scale(${icon / 24})" fill="none" stroke="#f2c94c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="${tx.toFixed(1)}" y="${cy + 4.5}" font-size="${size}" class="m" textLength="${titleW.toFixed(1)}" lengthAdjust="spacing" style="fill:#f7f8f8">${esc(title)}</text>
+<line x1="${(tx + titleW + 8.5).toFixed(1)}" y1="${cy - 6}" x2="${(tx + titleW + 8.5).toFixed(1)}" y2="${cy + 6}" stroke="#ffffff" stroke-opacity="0.18"/>
+<text x="${(tx + titleW + 17).toFixed(1)}" y="${cy + 4.5}" font-size="${size}" textLength="${subW.toFixed(1)}" lengthAdjust="spacing" style="fill:#b4b8bf">${esc(sub)}</text>`;
 }
 
 function earthriseCard(er, icon, shot, t) {
-  const imgX = 24, imgY = 108, imgW = W - 48, imgH = 445;
-  const H = imgY + imgH + 24;
-  const meta = `${esc(er.stack)}${dot}${fig(num(er.commits))} commits${er.stars > 0 ? `${dot}${fig(num(er.stars))} ${er.stars === 1 ? 'star' : 'stars'}` : ''}`;
-  const body = `${projectHeader(er, icon, meta)}
-<clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
-<image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
-<rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>
-${awardBadge(er.award, imgX + imgW - 12, imgY + 12)}`;
-  return svg(W, H, body, t, `Earthrise: ${er.tagline}. A team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
+  const imgX = 28, imgY = 96, imgW = W - 56, imgH = 420;
+  const H = imgY + imgH + 28;
+  const meta = `${er.stack} · ${num(er.commits)} commits`;
+  const body = `${projectHeader(er, icon, meta, t)}
+<clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="10"/></clipPath>
+<image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMin slice" href="data:image/jpeg;base64,${shot}"/>
+<rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="10" fill="none" stroke="${t.line}"/>
+${awardBadge(er.award, imgX + imgW - 14, imgY + 14)}`;
+  return svg(W, H, body, t, `Earthrise: ${er.tagline}. A team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`, { mono: true });
 }
 
-// Releases per day (or week) in one neutral color, and the latest releases.
+// Releases per day (or week), the last seven days in ink, and the latest ones.
 function cadenceCard(data, t) {
-  const H = 228;
+  const H = 252;
   const DAY = 86400e3;
   const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
   const first = all.at(-1)?.at ?? NOW;
@@ -387,44 +473,48 @@ function cadenceCard(data, t) {
     if (i >= 0 && i < count) buckets[i]++;
   }
   const max = Math.max(1, ...buckets);
-  const chartX = 24, chartY = 56, chartW = 448, chartH = 120;
+  const chartX = 28, chartY = 84, chartW = 440, chartH = 108;
   const step = chartW / count;
-  const gap = Math.min(4, step * 0.3);
+  const gap = Math.min(4, step * 0.32);
   const base = chartY + chartH;
+  const recent = daily ? 7 : 1;
 
+  const grid = [0.5, 1].map((f) => `<line x1="${chartX}" y1="${(base - f * chartH).toFixed(1)}" x2="${chartX + chartW}" y2="${(base - f * chartH).toFixed(1)}" stroke="${t.rule}" stroke-dasharray="2 4"/>`).join('');
   const bars = buckets
     .map((n, i) => {
       if (!n) return '';
-      const h = (n / max) * chartH;
-      return `<rect x="${(chartX + i * step + gap / 2).toFixed(2)}" y="${(base - h).toFixed(2)}" width="${(step - gap).toFixed(2)}" height="${h.toFixed(2)}" rx="1.5" fill="${t.bar}"/>`;
+      const h = Math.max(3, (n / max) * chartH);
+      const fill = i >= count - recent ? t.barNow : t.bar;
+      return `<rect x="${(chartX + i * step + gap / 2).toFixed(2)}" y="${(base - h).toFixed(2)}" width="${(step - gap).toFixed(2)}" height="${h.toFixed(2)}" rx="2" fill="${fill}"/>`;
     })
     .join('');
 
   const shown = all.filter((r) => r.at.getTime() >= start).length;
-  const summary = shown === all.length ? `${all.length} since ${day(first)}` : `${shown} in ${count} ${daily ? 'days' : 'weeks'}`;
+  const week = all.filter((r) => NOW - r.at < 7 * DAY).length;
+  const summary = shown === all.length ? `${all.length} releases since ${day(first)}.` : `${shown} releases in the last ${count} ${daily ? 'days' : 'weeks'}.`;
 
-  const listX = 520;
+  const listX = 528;
   const rows = all
     .slice(0, 6)
     .map((r, i) => {
-      const y = 64 + i * 24;
-      return `<text x="${listX}" y="${y}" font-size="14">${esc(r.name)}</text>
-<text x="${listX + 80}" y="${y}" class="mono s" font-size="12">${esc(r.tag)}</text>
-<text x="${W - 24}" y="${y}" class="mono t" font-size="12" text-anchor="end">${esc(day(r.at))}</text>`;
+      const y = 92 + i * 26;
+      return `<text x="${listX}" y="${y}" font-size="13">${esc(r.name)}</text>
+<text x="${listX + 76}" y="${y}" class="mono s" font-size="12">${esc(r.tag)}</text>
+<text x="${W - 28}" y="${y}" class="t" font-size="13" text-anchor="end">${esc(day(r.at))}</text>`;
     })
     .join('\n');
 
-  const body = `<text x="24" y="32" font-size="14" font-weight="500">Releases per ${daily ? 'day' : 'week'}</text>
-<text x="${chartX + chartW}" y="32" class="t" font-size="12" text-anchor="end">${esc(summary)}</text>
-<line x1="${chartX}" y1="${base + 0.5}" x2="${chartX + chartW}" y2="${base + 0.5}" stroke="${t.rule}"/>
+  const body = `${heading(28, 38, 'Shipping.', summary)}
+<text x="${W - 28}" y="38" class="t" font-size="12" text-anchor="end">${week} this week</text>
+<line x1="28" y1="60.5" x2="${W - 28}" y2="60.5" stroke="${t.rule}"/>
+${grid}
+<line x1="${chartX}" y1="${base + 0.5}" x2="${chartX + chartW}" y2="${base + 0.5}" stroke="${t.line}"/>
 ${bars}
-<text x="${chartX}" y="${base + 20}" class="mono t" font-size="12">${esc(day(new Date(start)))}</text>
-<text x="${chartX + chartW}" y="${base + 20}" class="mono t" font-size="12" text-anchor="end">today</text>
-<line x1="${listX - 24}" y1="24" x2="${listX - 24}" y2="${H - 24}" stroke="${t.rule}"/>
-<text x="${listX}" y="32" font-size="14" font-weight="500">Latest releases</text>
-${rows}
-<text x="${W - 24}" y="${H - 20}" class="t" font-size="12" text-anchor="end">updated ${esc(NOW.toISOString().slice(0, 16).replace('T', ' '))} UTC</text>`;
-  return svg(W, H, body, t, `${all.length} releases since ${day(first)}. Latest: ${all.slice(0, 3).map((r) => `${r.name} ${r.tag}`).join(', ')}.`);
+<text x="${chartX}" y="${base + 26}" class="t" font-size="12">${esc(day(new Date(start)))}</text>
+<text x="${chartX + chartW}" y="${base + 26}" class="t" font-size="12" text-anchor="end">Today</text>
+<line x1="${listX - 30.5}" y1="80" x2="${listX - 30.5}" y2="${H - 28}" stroke="${t.rule}"/>
+${rows}`;
+  return svg(W, H, body, t, `${all.length} releases since ${day(first)}, ${week} this week. Latest: ${all.slice(0, 3).map((r) => `${r.name} ${r.tag}`).join(', ')}.`, { mono: true });
 }
 
 // --- main ---------------------------------------------------------------
@@ -436,7 +526,7 @@ const icons = Object.fromEntries(
 const shot = (await readFile(new URL('../assets/earthrise.jpg', import.meta.url))).toString('base64');
 await mkdir(OUT, { recursive: true });
 for (const [mode, t] of Object.entries(THEMES)) {
-  await writeFile(join(OUT, `stats-${mode}.svg`), statsCard(data, t));
+  await writeFile(join(OUT, `hero-${mode}.svg`), heroCard(data, t));
   await writeFile(join(OUT, `apps-${mode}.svg`), appsCard(data.apps, icons, t));
   await writeFile(join(OUT, `cadence-${mode}.svg`), cadenceCard(data, t));
   await writeFile(join(OUT, `typeprose-${mode}.svg`), typeproseCard(data.typeprose, icons.typeprose, t, mode));
