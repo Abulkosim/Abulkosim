@@ -1,32 +1,15 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/stats-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/stats-light.svg" alt="Installer downloads, releases shipped, contributions and merged pull requests" width="840" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/stats-light.svg" alt="Installer downloads, releases, contributions in the past year and merged public pull requests" width="840" />
 </picture>
 
-<a href="https://github.com/Abulkosim/margin">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/margin-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/margin-light.svg" alt="Margin: Claude Code and Codex usage limits across accounts, for macOS and Windows" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/apps-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
 </picture>
-</a>
-<a href="https://github.com/Abulkosim/wick">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/wick-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/wick-light.svg" alt="Wick: keeps your computer awake, for macOS, Windows and Linux" width="840" />
-</picture>
-</a>
-<a href="https://github.com/Abulkosim/weir">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/weir-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/weir-light.svg" alt="Weir: internet speed and connection checks, for macOS and Windows" width="840" />
-</picture>
-</a>
-<a href="https://github.com/Abulkosim/tonearm">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/tonearm-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/tonearm-light.svg" alt="Tonearm: a mini player for the Spotify desktop app in the macOS menu bar" width="840" />
-</picture>
-</a>
+
+[Margin](https://github.com/Abulkosim/margin) · [Wick](https://github.com/Abulkosim/wick) · [Weir](https://github.com/Abulkosim/weir) · [Tonearm](https://github.com/Abulkosim/tonearm)
+
 <a href="https://github.com/Abulkosim/typeprose">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/typeprose-dark.svg" />
@@ -36,11 +19,9 @@
 <a href="https://github.com/Abulkosim/earthrise">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, first place in Uzbekistan at NASA Space Apps 2026, with a screenshot of the app" width="840" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
 </picture>
 </a>
-
-Earthrise is a team project. It took first place in Uzbekistan at NASA Space Apps 2026. Next it goes to the global round.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/cadence-dark.svg" />
@@ -55,13 +36,7 @@ brew install --cask abulkosim/tap/tonearm
 
 ### How the apps ship
 
-CI builds every release. Each one comes with SHA-256 sums, an SBOM, and build provenance you can check with `gh attestation verify`.
-
-The apps check for updates once a day. Updates are signed, and nothing installs until you say so.
-
-Actions are pinned to commit SHAs. Every app runs Scorecard, `cargo audit`, `cargo deny` and `pnpm audit`. Margin and Weir also run CodeQL, and Weir's parsers are fuzzed.
-
-There is no telemetry and no account. Each app's privacy notes say what it reads and what it sends.
+CI builds every release, with checksums and build provenance you can check with `gh attestation verify`. Updates are signed and install only when you say so. No telemetry, no account.
 
 ### Other things
 

@@ -11,10 +11,10 @@ const NOW = process.env.RENDER_NOW ? new Date(process.env.RENDER_NOW) : new Date
 const W = 840;
 
 const APPS = [
-  { repo: 'margin', name: 'Margin', tagline: 'Claude Code and Codex usage limits, across accounts', accent: ['#6c886f', '#b8d1ba'] },
-  { repo: 'wick', name: 'Wick', tagline: 'Keeps your computer awake, for a time or while an app runs', accent: ['#b8873a', '#f0d39b'] },
-  { repo: 'weir', name: 'Weir', tagline: 'Internet speed and connection checks from the menu bar', accent: ['#2f7fbf', '#7ab4e4'] },
-  { repo: 'tonearm', name: 'Tonearm', tagline: 'A mini player for the Spotify desktop app, in the menu bar', accent: ['#c8692a', '#f0954f'] },
+  { repo: 'margin', name: 'Margin', tagline: 'Claude Code and Codex usage limits, across accounts' },
+  { repo: 'wick', name: 'Wick', tagline: 'Keeps your computer awake, for a time or while an app runs' },
+  { repo: 'weir', name: 'Weir', tagline: 'Internet speed and connection checks from the menu bar' },
+  { repo: 'tonearm', name: 'Tonearm', tagline: 'A mini player for the Spotify desktop app, in the menu bar' },
 ];
 
 // typeprose has no releases. Its card shows the app itself: a passage from its
@@ -34,7 +34,7 @@ const EARTHRISE = {
   repo: 'earthrise',
   name: 'Earthrise',
   tagline: 'Sunlight, Earth contact and power at the Moon’s south pole',
-  stack: 'NASA Space Apps 2026   ·   TypeScript, WebGL 2 and Python',
+  stack: 'Team project   ·   NASA Space Apps 2026, global round next   ·   TypeScript, WebGL 2 and Python',
   // Shown as a badge on the screenshot.
   award: ['1st place', 'NASA Space Apps 2026 · Uzbekistan'],
 };
@@ -48,12 +48,12 @@ const PLATFORM = [
 
 const THEMES = {
   light: {
-    card: '#ffffff', line: '#d0d7de', ink: '#1f2328', secondary: '#59636e', tertiary: '#818b98',
-    track: '#f0f2f0',
+    card: '#ffffff', line: '#d1d9e0', rule: '#eaeef2', ink: '#1f2328', secondary: '#59636e', tertiary: '#818b98',
+    bar: '#59636e',
   },
   dark: {
-    card: '#0d1117', line: '#3d444d', ink: '#f0f6fc', secondary: '#9198a1', tertiary: '#656c76',
-    track: '#161b1a',
+    card: '#0d1117', line: '#3d444d', rule: '#21262d', ink: '#f0f6fc', secondary: '#9198a1', tertiary: '#656c76',
+    bar: '#9198a1',
   },
 };
 
@@ -194,12 +194,9 @@ function ago(date) {
   return 'just now';
 }
 
-// Stars only count once there are some.
-const starStat = (n) => (n > 0 ? [[num(n), n === 1 ? 'star' : 'stars']] : []);
-
 const day = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
-function svg(width, height, body, t, title) {
+function svg(width, height, body, t, title, frame = true) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}">
 <title>${esc(title)}</title>
 <style>
@@ -207,62 +204,71 @@ function svg(width, height, body, t, title) {
   .mono { font-family: ${MONO}; font-variant-numeric: tabular-nums; }
   .s { fill: ${t.secondary}; }
   .t { fill: ${t.tertiary}; }
-  .grow { transform-box: fill-box; transform-origin: bottom; transform: scaleY(0); animation: grow .5s cubic-bezier(.2,.7,.2,1) forwards; }
-  @keyframes grow { to { transform: scaleY(1); } }
-  @media (prefers-reduced-motion: reduce) { .grow { animation: none; transform: none; } }
 </style>
-<rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="12" fill="${t.card}" stroke="${t.line}"/>
+${frame ? `<rect x="0.5" y="0.5" width="${width - 1}" height="${height - 1}" rx="12" fill="${t.card}" stroke="${t.line}"/>` : ''}
 ${body}
 </svg>
 `;
 }
 
 // --- cards --------------------------------------------------------------
+//
+// Three text sizes (16 names, 14 body and figures, 12 meta), weights 400 and
+// 500, one sans and one mono. Color comes only from the content: the app
+// icons, the typeprose passage and the Earthrise screenshot.
 
+const dot = '   ·   ';
+const fig = (v) => `<tspan class="mono">${esc(v)}</tspan>`;
+
+// One quiet line of totals, no frame.
 function statsCard(data, t) {
   const downloads = data.apps.reduce((n, a) => n + a.downloads, 0);
   const shipped = data.apps.reduce((n, a) => n + a.releases.length, 0);
-  const cells = [
+  const parts = [
     [num(downloads), 'installer downloads'],
-    [num(shipped), 'releases shipped'],
-    [num(data.contributions), 'contributions, past year'],
-    [num(data.mergedPrs), 'public PRs merged'],
-  ];
-  const cw = W / cells.length;
-  const body = cells
-    .map(([value, label], i) => {
-      const x = cw * i + 28;
-      const sep = i ? `<line x1="${cw * i}" y1="24" x2="${cw * i}" y2="72" stroke="${t.line}"/>` : '';
-      return `${sep}<text x="${x}" y="52" class="mono" font-size="26" font-weight="500">${esc(value)}</text>
-<text x="${x}" y="72" class="s" font-size="13">${esc(label)}</text>`;
-    })
-    .join('\n');
-  return svg(W, 96, body, t,
-    `${num(downloads)} installer downloads, ${shipped} releases, ${data.contributions} contributions in the last year, ${data.mergedPrs} public pull requests merged`);
+    [num(shipped), 'releases'],
+    [num(data.contributions), 'contributions in the past year'],
+    [num(data.mergedPrs), 'merged public PRs'],
+  ]
+    .map(([v, l]) => `<tspan class="mono">${esc(v)}</tspan><tspan class="s"> ${esc(l)}</tspan>`)
+    .join(`<tspan class="t">${dot}</tspan>`);
+  return svg(W, 32, `<text x="1" y="21" font-size="14" xml:space="preserve">${parts}</text>`, t,
+    `${num(downloads)} installer downloads, ${shipped} releases, ${data.contributions} contributions in the past year, ${data.mergedPrs} merged public pull requests`, false);
 }
 
-function appCard(app, icon, t) {
-  const H = 112;
-  const nameW = app.name.length * 11;
-  const meta = [app.platforms.join(' · '), app.released && `released ${ago(app.released)}`].filter(Boolean).join('   ·   ');
-  const stats = [
-    [num(app.downloads), 'downloads'],
-    ...starStat(app.stars),
-  ];
-  const statsSvg = stats
-    .map(([v, l], i) => {
-      const x = W - 28 - (stats.length - 1 - i) * 104;
-      return `<text x="${x}" y="52" class="mono" font-size="20" font-weight="500" text-anchor="end">${esc(v)}</text>
-<text x="${x}" y="72" class="t" font-size="12" text-anchor="end">${esc(l)}</text>`;
+// All four apps in one panel, one row each, figures in aligned columns.
+function appsCard(apps, icons, t) {
+  const top = 52, rowH = 60;
+  const H = top + apps.length * rowH + 8;
+  const col = { downloads: 600, stars: 680, released: W - 24 };
+  const head = `<text x="24" y="32" font-size="14" font-weight="500">Apps</text>
+<text x="${col.downloads}" y="32" class="t" font-size="12" text-anchor="end">downloads</text>
+<text x="${col.stars}" y="32" class="t" font-size="12" text-anchor="end">stars</text>
+<text x="${col.released}" y="32" class="t" font-size="12" text-anchor="end">last release</text>
+<line x1="24" y1="${top - 0.5}" x2="${W - 24}" y2="${top - 0.5}" stroke="${t.rule}"/>`;
+  const rows = apps
+    .map((a, i) => {
+      const y = top + i * rowH;
+      const rule = i < apps.length - 1 ? `<line x1="72" y1="${y + rowH - 0.5}" x2="${W - 24}" y2="${y + rowH - 0.5}" stroke="${t.rule}"/>` : '';
+      return `<image x="24" y="${y + 14}" width="32" height="32" href="data:image/png;base64,${icons[a.repo]}"/>
+<text x="72" y="${y + 27}" font-size="14" xml:space="preserve"><tspan font-weight="500">${esc(a.name)}</tspan><tspan class="mono t" font-size="12">  ${esc(a.version)}</tspan><tspan class="t" font-size="12">${dot}${esc(a.platforms.join(', '))}</tspan></text>
+<text x="72" y="${y + 46}" class="s" font-size="12">${esc(a.tagline)}</text>
+<text x="${col.downloads}" y="${y + 35}" class="mono" font-size="14" text-anchor="end">${esc(num(a.downloads))}</text>
+${a.stars > 0 ? `<text x="${col.stars}" y="${y + 35}" class="mono s" font-size="14" text-anchor="end">${esc(num(a.stars))}</text>` : ''}
+<text x="${col.released}" y="${y + 35}" class="mono t" font-size="12" text-anchor="end">${esc(a.released ? ago(a.released) : '—')}</text>
+${rule}`;
     })
     .join('\n');
-  const body = `<image x="24" y="24" width="64" height="64" href="data:image/png;base64,${icon}"/>
-<text x="108" y="48" font-size="20" font-weight="500">${esc(app.name)}</text>
-<text x="${108 + nameW + 8}" y="48" class="mono t" font-size="13">${esc(app.version)}</text>
-<text x="108" y="72" class="s" font-size="14">${esc(app.tagline)}</text>
-<text x="108" y="92" class="t" font-size="12">${esc(meta)}</text>
-${statsSvg}`;
-  return svg(W, H, body, t, `${app.name} ${app.version}: ${app.tagline}. ${app.downloads} downloads${app.stars ? `, ${app.stars} stars` : ''}.`);
+  const label = apps.map((a) => `${a.name} ${a.version}: ${a.tagline}, ${a.downloads} downloads${a.stars ? `, ${a.stars} stars` : ''}`).join('. ');
+  return svg(W, H, `${head}\n${rows}`, t, `Apps. ${label}.`);
+}
+
+// Shared header for the web projects: icon, name, one line, one meta line.
+function projectHeader(p, icon, meta) {
+  return `<image x="24" y="24" width="44" height="44" href="data:image/png;base64,${icon}"/>
+<text x="84" y="42" font-size="16" xml:space="preserve"><tspan font-weight="500">${esc(p.name)}</tspan><tspan class="mono t" font-size="12">  web</tspan></text>
+<text x="84" y="64" class="s" font-size="14">${esc(p.tagline)}</text>
+<text x="84" y="84" class="t" font-size="12" xml:space="preserve">${meta}</text>`;
 }
 
 function wrap(text, width) {
@@ -279,7 +285,7 @@ function typeproseCard(tp, icon, t, mode) {
   const c = tp.stage[mode];
   const p = tp.passage;
   const CH = 9; // every glyph is forced to this advance with textLength
-  const stageX = 24, stageY = 112, stageW = W - 48, padX = 24;
+  const stageX = 24, stageY = 108, stageW = W - 48, padX = 24;
   const cols = Math.floor((stageW - padX * 2) / CH);
   const lines = wrap(p.line, cols).slice(0, 2);
   const stageH = 40 + lines.length * 28 + 24;
@@ -314,24 +320,8 @@ function typeproseCard(tp, icon, t, mode) {
     })
     .join('\n');
 
-  const nameW = tp.name.length * 10;
-  const stats = [
-    [num(tp.passages), 'passages'],
-    [num(tp.commits), 'commits'],
-  ]
-    .map(([v, l], i) => {
-      const x = W - 28 - (1 - i) * 104;
-      return `<text x="${x}" y="52" class="mono" font-size="20" font-weight="500" text-anchor="end">${esc(v)}</text>
-<text x="${x}" y="72" class="t" font-size="12" text-anchor="end">${esc(l)}</text>`;
-    })
-    .join('\n');
-
-  const body = `<image x="30" y="30" width="52" height="52" href="data:image/png;base64,${icon}"/>
-<text x="108" y="48" font-size="20" font-weight="500">${esc(tp.name)}</text>
-<text x="${108 + nameW + 8}" y="48" class="mono t" font-size="13">web</text>
-<text x="108" y="72" class="s" font-size="14">${esc(tp.tagline)}</text>
-<text x="108" y="92" class="t" font-size="12">React, Fastify and Postgres   ·   last commit ${esc(ago(tp.pushed))}</text>
-${stats}
+  const meta = `React, Fastify and Postgres${dot}${fig(num(tp.passages))} passages${dot}${fig(num(tp.commits))} commits${tp.stars > 0 ? `${dot}${fig(num(tp.stars))} ${tp.stars === 1 ? 'star' : 'stars'}` : ''}`;
+  const body = `${projectHeader(tp, icon, meta)}
 <rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="8" fill="${c.bg}"/>
 ${text}
 <text x="${stageX + padX}" y="${stageY + stageH - 20}" font-size="12" style="fill:${c.pending}">${esc(p.author)}, ${esc(p.title)}</text>
@@ -348,10 +338,11 @@ const HELV = {
 };
 const textWidth = (str, size, weight = 'r') => [...str].reduce((n, ch) => n + (HELV[weight][ch] ?? 600), 0) * size / 1000;
 
-// A small badge in the top right corner of the screenshot, in the style of
-// a shadcn/ui badge. Same colors in both themes: it sits on the image.
+// A small badge in the top right corner of the screenshot, like a shadcn/ui
+// outline badge: flat, a hairline border, no shadow. Same colors in both
+// themes, since it sits on the image.
 function awardBadge([title, sub], right, top) {
-  const size = 13, padX = 12, icon = 14, gap = 7, h = 30;
+  const size = 12, padX = 10, icon = 14, gap = 6, h = 28;
   const titleW = textWidth(title, size, 'b');
   const subText = `  ·  ${sub}`;
   const subW = textWidth(subText, size);
@@ -359,43 +350,27 @@ function awardBadge([title, sub], right, top) {
   const x = right - w, cy = top + h / 2;
   const tx = x + padX + icon + gap;
   const trophy = 'M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z';
-  return `<filter id="lift" x="-10%" y="-40%" width="120%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".4"/></filter>
-<rect x="${x}" y="${top}" width="${w}" height="${h}" rx="7" fill="#fafafa" filter="url(#lift)"/>
+  return `<rect x="${x + 0.5}" y="${top + 0.5}" width="${w - 1}" height="${h - 1}" rx="6" fill="#fafafa" stroke="#e4e4e7"/>
 <path d="${trophy}" transform="translate(${x + padX} ${cy - icon / 2}) scale(${icon / 24})" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="${tx}" y="${cy + 4.5}" font-size="${size}" font-weight="600" textLength="${titleW.toFixed(1)}" lengthAdjust="spacing" style="fill:#09090b">${esc(title)}</text>
-<text x="${tx + titleW}" y="${cy + 4.5}" font-size="${size}" font-weight="500" textLength="${subW.toFixed(1)}" lengthAdjust="spacing" xml:space="preserve" style="fill:#52525b">${esc(subText)}</text>`;
+<text x="${tx}" y="${cy + 4}" font-size="${size}" font-weight="600" textLength="${titleW.toFixed(1)}" lengthAdjust="spacing" style="fill:#09090b">${esc(title)}</text>
+<text x="${tx + titleW}" y="${cy + 4}" font-size="${size}" textLength="${subW.toFixed(1)}" lengthAdjust="spacing" xml:space="preserve" style="fill:#52525b">${esc(subText)}</text>`;
 }
 
 function earthriseCard(er, icon, shot, t) {
-  const imgX = 24, imgY = 112, imgW = W - 48, imgH = 445;
+  const imgX = 24, imgY = 108, imgW = W - 48, imgH = 445;
   const H = imgY + imgH + 24;
-  const nameW = er.name.length * 10;
-  const stats = [
-    [num(er.commits), 'commits'],
-    ...starStat(er.stars),
-  ];
-  const statsSvg = stats
-    .map(([v, l], i, all) => {
-      const x = W - 28 - (all.length - 1 - i) * 104;
-      return `<text x="${x}" y="52" class="mono" font-size="20" font-weight="500" text-anchor="end">${esc(v)}</text>
-<text x="${x}" y="72" class="t" font-size="12" text-anchor="end">${esc(l)}</text>`;
-    })
-    .join('\n');
-  const body = `<image x="30" y="30" width="52" height="52" href="data:image/png;base64,${icon}"/>
-<text x="108" y="48" font-size="20" font-weight="500">${esc(er.name)}</text>
-<text x="${108 + nameW + 8}" y="48" class="mono t" font-size="13">web</text>
-<text x="108" y="72" class="s" font-size="14">${esc(er.tagline)}</text>
-<text x="108" y="92" class="t" font-size="12">${esc(er.stack)}   ·   last commit ${esc(ago(er.pushed))}</text>
-${statsSvg}
+  const meta = `${esc(er.stack)}${dot}${fig(num(er.commits))} commits${er.stars > 0 ? `${dot}${fig(num(er.stars))} ${er.stars === 1 ? 'star' : 'stars'}` : ''}`;
+  const body = `${projectHeader(er, icon, meta)}
 <clipPath id="shot"><rect x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" rx="8"/></clipPath>
 <image x="${imgX}" y="${imgY}" width="${imgW}" height="${imgH}" clip-path="url(#shot)" preserveAspectRatio="xMidYMid slice" href="data:image/jpeg;base64,${shot}"/>
 <rect x="${imgX + 0.5}" y="${imgY + 0.5}" width="${imgW - 1}" height="${imgH - 1}" rx="8" fill="none" stroke="${t.line}"/>
-${awardBadge(er.award, imgX + imgW - 14, imgY + 14)}`;
-  return svg(W, H, body, t, `Earthrise: ${er.tagline}. First place in Uzbekistan at NASA Space Apps 2026. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
+${awardBadge(er.award, imgX + imgW - 12, imgY + 12)}`;
+  return svg(W, H, body, t, `Earthrise: ${er.tagline}. A team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next. A screenshot of the app: a map of the lunar south pole with the mission brief, the site sheet and the timeline.`);
 }
 
-function cadenceCard(data, t, mode) {
-  const H = 244;
+// Releases per day (or week) in one neutral color, and the latest releases.
+function cadenceCard(data, t) {
+  const H = 228;
   const DAY = 86400e3;
   const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
   const first = all.at(-1)?.at ?? NOW;
@@ -406,67 +381,50 @@ function cadenceCard(data, t, mode) {
   const count = daily ? Math.max(28, spanDays) : Math.min(52, Math.ceil(spanDays / 7));
   const end = Date.UTC(NOW.getUTCFullYear(), NOW.getUTCMonth(), NOW.getUTCDate()) + DAY;
   const start = end - count * unit;
-  const buckets = Array.from({ length: count }, () => Object.fromEntries(data.apps.map((a) => [a.repo, 0])));
+  const buckets = Array(count).fill(0);
   for (const r of all) {
     const i = Math.floor((r.at.getTime() - start) / unit);
-    if (i >= 0 && i < count) buckets[i][r.repo]++;
+    if (i >= 0 && i < count) buckets[i]++;
   }
-  const max = Math.max(1, ...buckets.map((b) => Object.values(b).reduce((x, y) => x + y, 0)));
-  const chartX = 28, chartY = 58, chartW = 440, chartH = 120;
+  const max = Math.max(1, ...buckets);
+  const chartX = 24, chartY = 56, chartW = 448, chartH = 120;
   const step = chartW / count;
   const gap = Math.min(4, step * 0.3);
-  const color = Object.fromEntries(data.apps.map((a) => [a.repo, a.accent[mode === 'dark' ? 1 : 0]]));
+  const base = chartY + chartH;
 
-  let bars = '';
-  buckets.forEach((b, i) => {
-    let y = chartY + chartH;
-    const x = (chartX + i * step + gap / 2).toFixed(2);
-    const w = (step - gap).toFixed(2);
-    bars += `<rect x="${x}" y="${chartY}" width="${w}" height="${chartH}" rx="1.5" fill="${t.track}"/>`;
-    for (const app of data.apps) {
-      const n = b[app.repo];
-      if (!n) continue;
+  const bars = buckets
+    .map((n, i) => {
+      if (!n) return '';
       const h = (n / max) * chartH;
-      y -= h;
-      bars += `<rect class="grow" style="animation-delay:${i * 8}ms" x="${x}" y="${y.toFixed(2)}" width="${w}" height="${h.toFixed(2)}" rx="1.5" fill="${color[app.repo]}"/>`;
-    }
-  });
+      return `<rect x="${(chartX + i * step + gap / 2).toFixed(2)}" y="${(base - h).toFixed(2)}" width="${(step - gap).toFixed(2)}" height="${h.toFixed(2)}" rx="1.5" fill="${t.bar}"/>`;
+    })
+    .join('');
 
   const shown = all.filter((r) => r.at.getTime() >= start).length;
-  const summary = shown === all.length ? `${all.length} releases since ${day(first)}` : `${shown} releases in ${count} ${daily ? 'days' : 'weeks'}`;
-  let lx = chartX;
-  const legend = data.apps
-    .map((a) => {
-      const g = `<circle cx="${lx + 4}" cy="${chartY + chartH + 44}" r="4" fill="${color[a.repo]}"/>
-<text x="${lx + 14}" y="${chartY + chartH + 48}" class="s" font-size="12">${esc(a.name)}</text>`;
-      lx += 14 + a.name.length * 7.5 + 18;
-      return g;
-    })
-    .join('\n');
+  const summary = shown === all.length ? `${all.length} since ${day(first)}` : `${shown} in ${count} ${daily ? 'days' : 'weeks'}`;
 
-  const listX = 512;
+  const listX = 520;
   const rows = all
     .slice(0, 6)
     .map((r, i) => {
-      const y = 72 + i * 24;
-      return `<circle cx="${listX + 4}" cy="${y - 4}" r="4" fill="${color[r.repo]}"/>
-<text x="${listX + 16}" y="${y}" font-size="13" font-weight="500">${esc(r.name)}</text>
-<text x="${listX + 84}" y="${y}" class="mono s" font-size="12">${esc(r.tag)}</text>
-<text x="${W - 28}" y="${y}" class="mono t" font-size="12" text-anchor="end">${esc(day(r.at))}</text>`;
+      const y = 64 + i * 24;
+      return `<text x="${listX}" y="${y}" font-size="14">${esc(r.name)}</text>
+<text x="${listX + 80}" y="${y}" class="mono s" font-size="12">${esc(r.tag)}</text>
+<text x="${W - 24}" y="${y}" class="mono t" font-size="12" text-anchor="end">${esc(day(r.at))}</text>`;
     })
     .join('\n');
 
-  const body = `<text x="28" y="34" font-size="14" font-weight="500">Release cadence</text>
-<text x="${chartX + chartW}" y="34" class="s" font-size="12" text-anchor="end">${esc(summary)}</text>
+  const body = `<text x="24" y="32" font-size="14" font-weight="500">Releases per ${daily ? 'day' : 'week'}</text>
+<text x="${chartX + chartW}" y="32" class="t" font-size="12" text-anchor="end">${esc(summary)}</text>
+<line x1="${chartX}" y1="${base + 0.5}" x2="${chartX + chartW}" y2="${base + 0.5}" stroke="${t.rule}"/>
 ${bars}
-${legend}
-<text x="${chartX}" y="${chartY + chartH + 18}" class="t" font-size="11">${esc(day(new Date(start)))}</text>
-<text x="${chartX + chartW}" y="${chartY + chartH + 18}" class="t" font-size="11" text-anchor="end">today</text>
-<line x1="${listX - 20}" y1="24" x2="${listX - 20}" y2="${H - 24}" stroke="${t.line}"/>
-<text x="${listX}" y="34" font-size="14" font-weight="500">Latest releases</text>
+<text x="${chartX}" y="${base + 20}" class="mono t" font-size="12">${esc(day(new Date(start)))}</text>
+<text x="${chartX + chartW}" y="${base + 20}" class="mono t" font-size="12" text-anchor="end">today</text>
+<line x1="${listX - 24}" y1="24" x2="${listX - 24}" y2="${H - 24}" stroke="${t.rule}"/>
+<text x="${listX}" y="32" font-size="14" font-weight="500">Latest releases</text>
 ${rows}
-<text x="${W - 28}" y="${H - 18}" class="t" font-size="11" text-anchor="end">updated ${esc(NOW.toISOString().slice(0, 16).replace('T', ' '))} UTC</text>`;
-  return svg(W, H, body, t, `${summary}. Latest: ${all.slice(0, 3).map((r) => `${r.name} ${r.tag}`).join(', ')}.`);
+<text x="${W - 24}" y="${H - 20}" class="t" font-size="12" text-anchor="end">updated ${esc(NOW.toISOString().slice(0, 16).replace('T', ' '))} UTC</text>`;
+  return svg(W, H, body, t, `${all.length} releases since ${day(first)}. Latest: ${all.slice(0, 3).map((r) => `${r.name} ${r.tag}`).join(', ')}.`);
 }
 
 // --- main ---------------------------------------------------------------
@@ -479,10 +437,10 @@ const shot = (await readFile(new URL('../assets/earthrise.jpg', import.meta.url)
 await mkdir(OUT, { recursive: true });
 for (const [mode, t] of Object.entries(THEMES)) {
   await writeFile(join(OUT, `stats-${mode}.svg`), statsCard(data, t));
-  await writeFile(join(OUT, `cadence-${mode}.svg`), cadenceCard(data, t, mode));
+  await writeFile(join(OUT, `apps-${mode}.svg`), appsCard(data.apps, icons, t));
+  await writeFile(join(OUT, `cadence-${mode}.svg`), cadenceCard(data, t));
   await writeFile(join(OUT, `typeprose-${mode}.svg`), typeproseCard(data.typeprose, icons.typeprose, t, mode));
   await writeFile(join(OUT, `earthrise-${mode}.svg`), earthriseCard(data.earthrise, icons.earthrise, shot, t));
-  for (const app of data.apps) await writeFile(join(OUT, `${app.repo}-${mode}.svg`), appCard(app, icons[app.repo], t));
 }
 await writeFile(join(OUT, 'data.json'), JSON.stringify({ generated: NOW, ...data, apps: data.apps.map(({ releases, ...a }) => ({ ...a, releases: releases.length })) }, null, 2) + '\n');
 console.log(`rendered ${OUT}: ${data.apps.map((a) => `${a.repo} ${a.version} ${a.downloads}dl`).join(', ')}; ${data.mergedPrs} merged PRs`);
