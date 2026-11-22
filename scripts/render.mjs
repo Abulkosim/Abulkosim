@@ -273,10 +273,9 @@ ${body}
 // reads as the page itself.
 function heroCard(data, t) {
   const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
-  const H = 148;
+  const H = 120;
 
-  const head = `<text x="0" y="22" font-size="20" class="m" letter-spacing="${track(20)}">Hi, I'm Abulkosim.</text>
-<text x="0" y="50" font-size="20" class="s" letter-spacing="${track(20)}">I make apps for the desktop and the web.</text>`;
+  const head = `<text x="0" y="22" font-size="20" class="m" letter-spacing="${track(20)}">I make apps for the desktop and the web.</text>`;
   const downloads = data.apps.reduce((n, a) => n + a.downloads, 0);
   const figures = [
     [num(downloads), 'Installer downloads'],
@@ -288,17 +287,17 @@ function heroCard(data, t) {
   const stats = figures
     .map(([v, l], i) => {
       const x = i * colW + (i ? 20 : 0);
-      const sep = i ? `<line x1="${i * colW + 0.5}" y1="94" x2="${i * colW + 0.5}" y2="${H - 2}" stroke="${t.rule}"/>` : '';
-      return `${sep}<text x="${x}" y="114" font-size="20" class="m n" letter-spacing="${track(20)}">${esc(v)}</text>
-<text x="${x}" y="138" font-size="13" class="t">${esc(l)}</text>`;
+      const sep = i ? `<line x1="${i * colW + 0.5}" y1="66" x2="${i * colW + 0.5}" y2="${H - 2}" stroke="${t.rule}"/>` : '';
+      return `${sep}<text x="${x}" y="86" font-size="20" class="m n" letter-spacing="${track(20)}">${esc(v)}</text>
+<text x="${x}" y="110" font-size="13" class="t">${esc(l)}</text>`;
     })
     .join('\n');
 
   const body = `${head}
-<line x1="0" y1="80.5" x2="${W}" y2="80.5" stroke="${t.rule}"/>
+<line x1="0" y1="52.5" x2="${W}" y2="52.5" stroke="${t.rule}"/>
 ${stats}`;
   return svg(W, H, body, t,
-    `Hi, I'm Abulkosim. I make apps for the desktop and the web. ${num(downloads)} installer downloads, ${all.length} releases, ${data.contributions} contributions in the last 12 months, ${data.mergedPrs} merged public pull requests.`,
+    `I make apps for the desktop and the web. ${num(downloads)} installer downloads, ${all.length} releases, ${data.contributions} contributions in the last 12 months, ${data.mergedPrs} merged public pull requests.`,
     { frame: false, below: 36 });
 }
 

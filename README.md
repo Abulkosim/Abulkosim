@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/hero-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/hero-light.svg" alt="Hi, I'm Abulkosim. I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/hero-light.svg" alt="I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
 </picture>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/cf8b16e43ff001e728b3d186dfefa9dc7beb8e2a/apps-dark.svg" />
