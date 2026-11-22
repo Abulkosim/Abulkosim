@@ -1,8 +1,4 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/hero-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/hero-light.svg" alt="I make apps for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
-</picture>
-<picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/apps-dark.svg" />
   <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/5498a674b9aa948dc46dfa6dd559b027735b3ebd/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
 </picture>
