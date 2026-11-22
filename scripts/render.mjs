@@ -275,7 +275,7 @@ function heroCard(data, t) {
   const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
   const H = 202;
 
-  const head = ['Small, focused software', 'for the desktop and the web.']
+  const head = ['I build the tools I want to use,', 'and ship them in the open.']
     .map((l, i) => `<text x="-1.5" y="${38 + i * 48}" font-size="40" class="m" letter-spacing="${track(40)}">${esc(l)}</text>`)
     .join('\n');
   const downloads = data.apps.reduce((n, a) => n + a.downloads, 0);
@@ -299,7 +299,7 @@ function heroCard(data, t) {
 <line x1="0" y1="130.5" x2="${W}" y2="130.5" stroke="${t.rule}"/>
 ${stats}`;
   return svg(W, H, body, t,
-    `Small, focused software for the desktop and the web. ${num(downloads)} installer downloads, ${all.length} releases, ${data.contributions} contributions in the last 12 months, ${data.mergedPrs} merged public pull requests.`,
+    `I build the tools I want to use, and ship them in the open. ${num(downloads)} installer downloads, ${all.length} releases, ${data.contributions} contributions in the last 12 months, ${data.mergedPrs} merged public pull requests.`,
     { frame: false, below: 36 });
 }
 

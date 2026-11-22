@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-light.svg" alt="Small, focused software for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-light.svg" alt="I build the tools I want to use, and ship them in the open. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
 </picture>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/apps-dark.svg" />
