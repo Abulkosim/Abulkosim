@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-light.svg" alt="Small, focused software for the desktop and the web. Menu bar apps for macOS, Windows and Linux, and a few projects for the web. Open source, with no accounts and no telemetry. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/hero-light.svg" alt="Small, focused software for the desktop and the web. With installer downloads, releases, contributions in the last 12 months and merged public pull requests." width="840" />
 </picture>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/output/apps-dark.svg" />
@@ -33,9 +33,9 @@ brew install --cask abulkosim/tap/tonearm
 
 Margin and the Windows and Linux builds are on each app's page: [Margin](https://github.com/Abulkosim/margin), [Wick](https://github.com/Abulkosim/wick), [Weir](https://github.com/Abulkosim/weir), [Tonearm](https://github.com/Abulkosim/tonearm).
 
-### How the apps ship
+### How I ship
 
-Every release is built in CI, with checksums and build provenance you can check with `gh attestation verify`. Updates are signed and install only when you say so. No telemetry. No account.
+I build every release in CI, with checksums and build provenance you can check with `gh attestation verify`. Updates are signed and install only when you say so. No telemetry. No account.
 
 ### Also
 

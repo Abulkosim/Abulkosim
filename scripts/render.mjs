@@ -264,43 +264,20 @@ ${body}
 `;
 }
 
-// A title the way Linear writes one: the name in ink, one sentence in grey.
-function heading(x, y, lead, rest, size = 15) {
-  return `<text x="${x}" y="${y}" font-size="${size}" letter-spacing="${track(size)}" xml:space="preserve"><tspan class="m">${esc(lead)}</tspan><tspan class="s"> ${esc(rest)}</tspan></text>`;
-}
-
 // --- cards --------------------------------------------------------------
 //
 // One headline at 40, titles at 15, body at 13 and 14, meta at 12. Weights
 // 400 and 510, one sans and one mono.
 
-// The top of the page: the latest release, one line, one sentence, and the
-// figures behind them. No frame, so it reads as the page itself.
+// The top of the page: one line and the figures behind it. No frame, so it
+// reads as the page itself.
 function heroCard(data, t) {
   const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
-  const last = all[0];
-  const H = 316;
-
-  let pill = '';
-  if (last) {
-    const lead = 'Latest';
-    const rest = `${last.name} ${last.tag}, ${ago(last.at)}`;
-    const leadW = measure(lead, 13, 510), restW = measure(rest, 13);
-    const w = 26 + leadW + 21 + restW + 14;
-    pill = `<rect x="0.5" y="0.5" width="${(w - 1).toFixed(1)}" height="29" rx="15" fill="${t.card}" stroke="${t.line}"/>
-<circle cx="15" cy="15" r="3" fill="#4cb782"/>
-<text x="26" y="19.5" font-size="13" class="m" textLength="${leadW.toFixed(1)}" lengthAdjust="spacing">${lead}</text>
-<line x1="${(26 + leadW + 10.5).toFixed(1)}" y1="9" x2="${(26 + leadW + 10.5).toFixed(1)}" y2="21" stroke="${t.line}"/>
-<text x="${(26 + leadW + 21).toFixed(1)}" y="19.5" font-size="13" class="s" textLength="${restW.toFixed(1)}" lengthAdjust="spacing">${esc(rest)}</text>`;
-  }
+  const H = 202;
 
   const head = ['Small, focused software', 'for the desktop and the web.']
-    .map((l, i) => `<text x="-1.5" y="${96 + i * 48}" font-size="40" class="m" letter-spacing="${track(40)}">${esc(l)}</text>`)
+    .map((l, i) => `<text x="-1.5" y="${38 + i * 48}" font-size="40" class="m" letter-spacing="${track(40)}">${esc(l)}</text>`)
     .join('\n');
-  const sub = ['Menu bar apps for macOS, Windows and Linux, and a few projects for the web.', 'Open source, built in public, with no accounts and no telemetry.']
-    .map((l, i) => `<text x="0" y="${188 + i * 25}" font-size="16" class="s" letter-spacing="${track(16)}">${esc(l)}</text>`)
-    .join('\n');
-
   const downloads = data.apps.reduce((n, a) => n + a.downloads, 0);
   const figures = [
     [num(downloads), 'Installer downloads'],
@@ -312,16 +289,14 @@ function heroCard(data, t) {
   const stats = figures
     .map(([v, l], i) => {
       const x = i * colW + (i ? 20 : 0);
-      const sep = i ? `<line x1="${i * colW + 0.5}" y1="258" x2="${i * colW + 0.5}" y2="${H - 2}" stroke="${t.rule}"/>` : '';
-      return `${sep}<text x="${x}" y="282" font-size="24" class="m n" letter-spacing="${track(24)}">${esc(v)}</text>
-<text x="${x}" y="306" font-size="13" class="t">${esc(l)}</text>`;
+      const sep = i ? `<line x1="${i * colW + 0.5}" y1="144" x2="${i * colW + 0.5}" y2="${H - 2}" stroke="${t.rule}"/>` : '';
+      return `${sep}<text x="${x}" y="168" font-size="24" class="m n" letter-spacing="${track(24)}">${esc(v)}</text>
+<text x="${x}" y="192" font-size="13" class="t">${esc(l)}</text>`;
     })
     .join('\n');
 
-  const body = `${pill}
-${head}
-${sub}
-<line x1="0" y1="244.5" x2="${W}" y2="244.5" stroke="${t.rule}"/>
+  const body = `${head}
+<line x1="0" y1="130.5" x2="${W}" y2="130.5" stroke="${t.rule}"/>
 ${stats}`;
   return svg(W, H, body, t,
     `Small, focused software for the desktop and the web. ${num(downloads)} installer downloads, ${all.length} releases, ${data.contributions} contributions in the last 12 months, ${data.mergedPrs} merged public pull requests.`,
@@ -330,13 +305,12 @@ ${stats}`;
 
 // All four apps in one panel, one row each, figures in aligned columns.
 function appsCard(apps, icons, t) {
-  const top = 64, rowH = 64;
+  const top = 52, rowH = 64;
   const H = top + apps.length * rowH + 10;
   const col = { downloads: 588, stars: 672, released: W - 28 };
-  const head = `${heading(28, 38, 'Apps.', 'Four menu bar apps, built with Rust, Swift and TypeScript.')}
-<text x="${col.downloads}" y="38" class="t" font-size="12" text-anchor="end">Downloads</text>
-<text x="${col.stars}" y="38" class="t" font-size="12" text-anchor="end">Stars</text>
-<text x="${col.released}" y="38" class="t" font-size="12" text-anchor="end">Released</text>
+  const head = `<text x="${col.downloads}" y="32" class="t" font-size="12" text-anchor="end">Downloads</text>
+<text x="${col.stars}" y="32" class="t" font-size="12" text-anchor="end">Stars</text>
+<text x="${col.released}" y="32" class="t" font-size="12" text-anchor="end">Released</text>
 <line x1="28" y1="${top - 0.5}" x2="${W - 28}" y2="${top - 0.5}" stroke="${t.rule}"/>`;
   const rows = apps
     .map((a, i) => {
@@ -354,7 +328,7 @@ ${rule}`;
     })
     .join('\n');
   const label = apps.map((a) => `${a.name} ${a.version}, for ${a.platforms.join(', ')}: ${a.tagline}, ${a.downloads} downloads${a.stars ? `, ${a.stars} stars` : ''}`).join('. ');
-  return svg(W, H, `${head}\n${rows}`, t, `Apps. ${label}.`, { mono: true });
+  return svg(W, H, `${head}\n${rows}`, t, `${label}.`, { mono: true });
 }
 
 // Shared header for the web projects: icon, name, one line, one meta label.
@@ -362,7 +336,6 @@ function projectHeader(p, icon, meta, t) {
   const nameW = measure(p.name, 15, 510);
   return `<image x="28" y="28" width="44" height="44" href="data:image/png;base64,${icon}"/>
 <text x="88" y="46" font-size="15" class="m" textLength="${nameW.toFixed(1)}" lengthAdjust="spacing">${esc(p.name)}</text>
-<text x="${(88 + nameW + 10).toFixed(1)}" y="46" font-size="12" class="mono t">web</text>
 <text x="88" y="68" class="s" font-size="14">${esc(p.tagline)}</text>
 <text x="${W - 28}" y="46" class="t" font-size="12" text-anchor="end">${esc(meta)}</text>`;
 }
@@ -456,7 +429,7 @@ ${awardBadge(er.award, imgX + imgW - 14, imgY + 14)}`;
 
 // Releases per day (or week), the last seven days in ink, and the latest ones.
 function cadenceCard(data, t) {
-  const H = 252;
+  const H = 208;
   const DAY = 86400e3;
   const all = data.apps.flatMap((a) => a.releases).sort((a, b) => b.at - a.at);
   const first = all.at(-1)?.at ?? NOW;
@@ -473,7 +446,7 @@ function cadenceCard(data, t) {
     if (i >= 0 && i < count) buckets[i]++;
   }
   const max = Math.max(1, ...buckets);
-  const chartX = 28, chartY = 84, chartW = 440, chartH = 108;
+  const chartX = 28, chartY = 40, chartW = 440, chartH = 108;
   const step = chartW / count;
   const gap = Math.min(4, step * 0.32);
   const base = chartY + chartH;
@@ -489,30 +462,25 @@ function cadenceCard(data, t) {
     })
     .join('');
 
-  const shown = all.filter((r) => r.at.getTime() >= start).length;
   const week = all.filter((r) => NOW - r.at < 7 * DAY).length;
-  const summary = shown === all.length ? `${all.length} releases since ${day(first)}.` : `${shown} releases in the last ${count} ${daily ? 'days' : 'weeks'}.`;
 
   const listX = 528;
   const rows = all
     .slice(0, 6)
     .map((r, i) => {
-      const y = 92 + i * 26;
+      const y = 48 + i * 26;
       return `<text x="${listX}" y="${y}" font-size="13">${esc(r.name)}</text>
 <text x="${listX + 76}" y="${y}" class="mono s" font-size="12">${esc(r.tag)}</text>
 <text x="${W - 28}" y="${y}" class="t" font-size="13" text-anchor="end">${esc(day(r.at))}</text>`;
     })
     .join('\n');
 
-  const body = `${heading(28, 38, 'Shipping.', summary)}
-<text x="${W - 28}" y="38" class="t" font-size="12" text-anchor="end">${week} this week</text>
-<line x1="28" y1="60.5" x2="${W - 28}" y2="60.5" stroke="${t.rule}"/>
-${grid}
+  const body = `${grid}
 <line x1="${chartX}" y1="${base + 0.5}" x2="${chartX + chartW}" y2="${base + 0.5}" stroke="${t.line}"/>
 ${bars}
 <text x="${chartX}" y="${base + 26}" class="t" font-size="12">${esc(day(new Date(start)))}</text>
 <text x="${chartX + chartW}" y="${base + 26}" class="t" font-size="12" text-anchor="end">Today</text>
-<line x1="${listX - 30.5}" y1="80" x2="${listX - 30.5}" y2="${H - 28}" stroke="${t.rule}"/>
+<line x1="${listX - 30.5}" y1="36" x2="${listX - 30.5}" y2="${H - 28}" stroke="${t.rule}"/>
 ${rows}`;
   return svg(W, H, body, t, `${all.length} releases since ${day(first)}, ${week} this week. Latest: ${all.slice(0, 3).map((r) => `${r.name} ${r.tag}`).join(', ')}.`, { mono: true });
 }
