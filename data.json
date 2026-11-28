@@ -1,0 +1,114 @@
+{
+  "generated": "2026-11-28T07:54:50.453Z",
+  "apps": [
+    {
+      "repo": "margin",
+      "name": "Margin",
+      "tagline": "Claude Code and Codex usage limits, across accounts",
+      "stars": 4,
+      "forks": 1,
+      "version": "v0.12.0",
+      "released": "2026-11-22T20:55:27.000Z",
+      "downloads": 228,
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "releases": 20
+    },
+    {
+      "repo": "wick",
+      "name": "Wick",
+      "tagline": "Keeps your computer awake, for a time or while an app runs",
+      "stars": 3,
+      "forks": 0,
+      "version": "v0.9.1",
+      "released": "2026-11-21T19:52:35.000Z",
+      "downloads": 126,
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "releases": 11
+    },
+    {
+      "repo": "weir",
+      "name": "Weir",
+      "tagline": "Internet speed and connection checks from the menu bar",
+      "stars": 0,
+      "forks": 0,
+      "version": "v0.8.1",
+      "released": "2026-11-22T07:00:21.000Z",
+      "downloads": 86,
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "releases": 12
+    },
+    {
+      "repo": "tonearm",
+      "name": "Tonearm",
+      "tagline": "A mini player for the Spotify desktop app, in the menu bar",
+      "stars": 1,
+      "forks": 0,
+      "version": "v0.4.1",
+      "released": "2026-11-22T18:59:58.000Z",
+      "downloads": 82,
+      "platforms": [
+        "macOS"
+      ],
+      "releases": 9
+    }
+  ],
+  "typeprose": {
+    "repo": "typeprose",
+    "name": "typeprose",
+    "tagline": "Typing practice on real prose from public-domain books",
+    "stack": "React, Fastify and Postgres",
+    "stage": {
+      "light": {
+        "bg": "#f4f1ea",
+        "line": "#e7e2d6",
+        "typed": "#1c1b19",
+        "pending": "#9a9385",
+        "caret": "#b07d1e",
+        "error": "#b23a3a"
+      },
+      "dark": {
+        "bg": "#141311",
+        "line": "#24221e",
+        "typed": "#ebe6dc",
+        "pending": "#6b665d",
+        "caret": "#d1a24a",
+        "error": "#c25555"
+      }
+    },
+    "stars": 1,
+    "commits": 135,
+    "passages": 140,
+    "pushed": "2026-08-01T18:02:33.000Z",
+    "passage": {
+      "author": "Joseph Conrad",
+      "title": "Heart of Darkness",
+      "text": "The sea-reach of the Thames stretched before us like the beginning of an interminable waterway. In the offing the sea and the sky were welded together without a joint, and in the luminous space the tanned sails of the barges drifting up with the tide seemed to stand still in red clusters of canvas sharply peaked, with gleams of varnished sprits.",
+      "line": "The sea-reach of the Thames stretched before us like the beginning of an interminable waterway."
+    }
+  },
+  "earthrise": {
+    "repo": "earthrise",
+    "name": "Earthrise",
+    "tagline": "Sunlight, Earth contact and power at the Moon’s south pole",
+    "stack": "Team project · TypeScript, WebGL 2 and Python",
+    "award": [
+      "1st place",
+      "NASA Space Apps 2026, Uzbekistan"
+    ],
+    "stars": 0,
+    "commits": 119,
+    "pushed": "2026-11-15T05:46:48.000Z"
+  },
+  "mergedPrs": 337,
+  "contributions": 3220
+}
