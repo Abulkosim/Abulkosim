@@ -1,22 +1,22 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/apps-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/apps-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/apps-light.svg" alt="Apps: Margin, Claude Code and Codex usage limits across accounts. Wick, keeps your computer awake. Weir, internet speed and connection checks from the menu bar. Tonearm, a mini player for the Spotify desktop app in the menu bar. With downloads, stars and the last release of each." width="840" />
 </picture>
 <a href="https://github.com/Abulkosim/typeprose">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/typeprose-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/typeprose-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/typeprose-light.svg" alt="typeprose: typing practice on real prose from public-domain books, showing today's passage mid-run" width="840" />
 </picture>
 </a>
 <a href="https://github.com/Abulkosim/earthrise">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/earthrise-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/earthrise-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/earthrise-light.svg" alt="Earthrise: sunlight, Earth contact and power at the Moon's south pole, a team project that took first place in Uzbekistan at NASA Space Apps 2026 and goes to the global round next, with a screenshot of the app" width="840" />
 </picture>
 </a>
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/cadence-dark.svg" />
-  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/760bfc3dd71841a9a03499f7df65dd8ba49bad4b/cadence-light.svg" alt="Releases per day since the first release, and the latest releases" width="840" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/cadence-dark.svg" />
+  <img src="https://raw.githubusercontent.com/Abulkosim/Abulkosim/3ec50392d2d7577b6f63e1fdc88b5e4e7fa07da7/cadence-light.svg" alt="Releases per day since the first release, and the latest releases" width="840" />
 </picture>
 
 ### Install
